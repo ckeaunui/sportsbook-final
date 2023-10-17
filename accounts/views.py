@@ -121,8 +121,9 @@ def userPage(request):
     if request.user.groups.exists():
         group = request.user.groups.all()[0].name
     if group == "customer":
+        customer = request.user.customer
         orders = Order.objects.filter(status='Pending')
-        context = {'orders': orders}
+        context = {'orders': orders, 'customer': customer}
         return render(request, 'accounts/profile.html', context)
     elif group == "admin":
         return redirect('dashboard')
