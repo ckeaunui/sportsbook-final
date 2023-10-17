@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-csp#i=u+8wsqq$el=35=v2+1k%m4hc62*o&34vqs9111xrf98o
 DEBUG = True
 
 #ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = ['plusevapp-0ce6c56d4b63.herokuapp.com', '127.0.0.1', 'plusev.us', '3.89.139.244:8000']
+ALLOWED_HOSTS = ['plusevapp-0ce6c56d4b63.herokuapp.com', '127.0.0.1', 'plusev.us', '54.196.233.127:8000']
 
 # Application definition
 
