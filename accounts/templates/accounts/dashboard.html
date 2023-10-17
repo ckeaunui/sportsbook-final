@@ -3,6 +3,19 @@
 <head>
     <title>PlusEV:Admin</title>
     <script src="https://kit.fontawesome.com/cfe57839c8.js" crossorigin="anonymous"></script>
+    <script>
+        $ = function(id) {
+            return document.getElementById(id);
+        }
+
+        var show = function(id) {
+            $(id).style.display ='block';
+        }
+        var hide = function(id) {
+            $(id).style.display ='none';
+        }
+        
+    </script>
 
 </head>
 <body>
@@ -33,9 +46,11 @@
             </div>
 
 
-            <div class="col-md-6">
-                <h5>USERS</h5>
-                <hr>
+            <div class="col-md-6 bg">
+                <span>
+                    <h5>USERS</h5>
+                    <a class="button2 logout" href="{% url 'register' %}">Add User</a>
+                </span>
                 <div class="card card-body">
 
                     <table class="table customer-table">
@@ -72,33 +87,15 @@
                                         <a href="#" onclick="hide('popup')">Cancel</a>
                                     </div>
                                     
-                                    <script>
-                                        $ = function(id) {
-                                            return document.getElementById(id);
-                                        }
-
-                                        var show = function(id) {
-                                            $(id).style.display ='block';
-                                        }
-                                        var hide = function(id) {
-                                            $(id).style.display ='none';
-                                        }
-                                    </script>
                                 </td>
                             </tr>
-
                         {% endfor %}
 
                     </table>
-                    
-                    <a class="button2 logout" href="{% url 'register' %}">Add User</a>
-                    <hr>
                 </div>
-
             </div>
-            <div class="col-md-5">
+            <div class="col-md-5 bg">
                 <h5>BETS</h5>
-                <hr>
                 <div class="card card-body">
                     <table class="table table-sm">
                         <tr>
@@ -131,9 +128,8 @@
                                 <td>{{ order.commence_time }}</td>
                                 <td>{{ order.payment_method }}</td>
                                 <td>{{ order.status }}</td>
-                                <td>                                
+                                <td>        
                                     <a class="button2" href="{% url 'edit_order' pk=order.id %}">Edit</a>
-                                    <a href=""><i class="fa-solid fa-trash"></i></a>
                                 </td>
                                 <td>
                                 </td>
@@ -146,7 +142,8 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="editModal" tabindex="-1" arial-labelledby="editModalLabel" aria-hidden="true">
+    <!--
+        <div class="modal fade" id="editModal" tabindex="-1" arial-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialogue modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
@@ -155,7 +152,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <!--
+            
                 <form id="formEdit" action="">
                     {% csrf_token %}
                     <div class="modal-body">
@@ -184,10 +181,10 @@
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary btnUpdate">Update</button>
                     </div>
-                </form>-->
+                </form>
             </div>
         </div>
-    </div>
+    </div>-->
     <script>
         $("#table tbody").on("click", ".link-delete", function(e) {
             e.preventDefault();
@@ -219,6 +216,21 @@
 </body>
 
 <style>
+
+    .h5 {
+        padding: 10px;
+    }
+
+    .bg {
+        background-color: #151d33;
+        padding: 10px;
+    }
+
+    .row div {
+        border-radius: 10px;
+        margin-top: 15px;
+    }
+
     i {
         color: red;
     }
@@ -240,7 +252,7 @@
 
     .header-row div {
         margin: 45px;
-        background-color: #273452;
+        background-color: #151d33;
         padding: 10px 20px;
         border-radius: 10px;
     }
@@ -267,7 +279,7 @@
         background-color: #04AA6D;
     }
 
-    #popup:after {
+    #popup:after, #delete-order-popup:after {
         position: fixed;
         content: "";
         top: 0;
@@ -279,7 +291,7 @@
 
     }
 
-    #popup:before {
+    #popup:before, #delete-order-popup:before {
         position: absolute;
         content: "";
         top: 0;
@@ -328,14 +340,15 @@
         color: #FFF;
     }
 
-    #customer-table {
+    .customer-table {
         border-radius: 10px;
         /*margin-right: 200px;*/
         background-color: #151d33;
         padding: 25px;
         border-collapse: collapse;
         margin-right: 350px;
-        width: 850px;  
+        width: 100%;  
+
     }
 
     #customer-table tr {
@@ -344,6 +357,7 @@
 
     table {
         border-collapse: collapse;
+        width: 100%;
     }
 
     th, td {
@@ -371,6 +385,8 @@
     tr {
         border-top: 2px solid #273452;
     }
+
+    
 
 </style>
 
