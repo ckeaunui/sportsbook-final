@@ -1,0 +1,390 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>PlusEV</title>
+    <link rel="stylesheet" data-purpose="Layout StyleSheet" title="Web Awesome" href="/css/app-wa-02670e9412103b5852dcbe140d278c49.css?vsn=d">
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css">
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/sharp-solid.css">
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/sharp-regular.css">
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/sharp-light.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+    {% block style %}
+    {% endblock style %}
+
+</head>
+<body>
+    {% include 'accounts/sidebar.html' %}
+    {% include 'accounts/navbar.html' %}
+    
+    <span id="temp"> 
+        <div id="block">
+            {% block content %}
+
+            {% endblock %}
+        </div>  
+    </span>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    {% block javascript %}
+    {% endblock javascript %}
+   
+</body>
+</html>
+
+
+<style>  Rename all these things to allow for glyphicon
+    html {
+        font-family: monospace;
+    }
+
+
+    body {
+        color: #f3f4f5;
+        background-color: #060d1f;
+        overflow-x: hidden;
+    }
+
+    #block {
+        margin-left: 200px;
+        margin-top: 61px;
+    }
+
+    .container {
+        display: flex;
+        align-items: center;
+    }
+
+    svg {
+        display: block;
+        font: 11.5em 'Montserrat';
+        margin: 0 auto;
+    }
+
+    .text-copy {
+        fill: none;
+        stroke: white;
+        stroke-dasharray: 6% 29%;
+        stroke-width: 7px;
+        stroke-dashoffset: 0%;
+        animation: stroke-offset 5.5s infinite linear;
+    }
+
+    .text-copy:nth-child(1){
+        stroke: #5c98fb;
+        animation-delay: -1;
+    }
+
+    .text-copy:nth-child(2){
+        stroke: #88a9fc;
+        animation-delay: -2s;
+    }
+
+    .text-copy:nth-child(3){
+        stroke: #9688fb;
+        animation-delay: -3s;
+    }
+
+    .text-copy:nth-child(4){
+        stroke: #7a5ef9;
+        animation-delay: -4s;
+    }
+
+    .text-copy:nth-child(5){
+        stroke: #a6b5fc;
+        animation-delay: -5s;
+    }
+
+    .text-copy:nth-child(6){
+        stroke: #5d6fcd;
+        animation-delay: -6s;
+    }
+
+    .text-copy:nth-child(7){
+        stroke: #324ccf;
+        animation-delay: -7s;
+    }
+
+    @keyframes stroke-offset{
+        100% {stroke-dashoffset: -35%;}
+    }
+
+
+    /* Main content */
+    .main {
+        margin-left: 200px; /* Same as the width of the sidenav */
+        font-size: 20px; /* Increased text to enable scrolling */
+        padding: 0px 10px;
+    }
+
+
+    .button, .button2 {
+        border: none;
+        color: #fff;
+        font-size: 15px;
+        cursor: pointer;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .button {
+        background-color: #F04A49;
+    }
+
+    .button:hover {
+        background-color: red;
+        color: #FFF;
+    }
+
+    .button2 {
+        background-color: #04AA6D;
+    }
+
+    .button2:hover {
+        background-color: #F04A49;
+        color: #FFF;
+    }
+
+    .button3 {
+        border: none;
+        color: #fff;
+        font: 10px;
+        padding: 7px 15px;
+        cursor: pointer;
+        border-radius: 5px;
+        text-decoration: none;
+        background-color: #F04A49;
+
+    }
+
+    .wager {
+        width: 50px;
+    }
+
+    .spread-container {
+        text-align: right;
+    }
+
+    .casino-game {
+        background-color: green;
+        color: black;
+        padding: 75px;
+        margin: 25px;
+        display: block;
+        font-size: 5vw;
+        text-decoration: none;
+    }
+    
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    tbody tr {
+        border-top: 2px solid #273452;
+    }
+
+    .total-container {
+        padding-right: 20px;
+    }
+    
+    td, th {
+        padding: 10px;
+        width: 25%;
+    }
+
+    th {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+    
+    .dropbtn, .type-btn {
+        background-color: #04AA6D;
+        color: white;
+        padding: 15px;
+        padding-right: 35px;
+        padding-left: 35px;
+        font-size: 16px;
+        border: none;
+        border-radius: 10px;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+        border-radius: 10px;
+        width: 25vw;
+        margin-right: 50px;
+    }
+
+    .dropdown-content {
+        /* display: none; */
+        position: absolute;
+        background-color: #f1f1f1;
+        max-height: 300px;
+        width: 300px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        overflow-y: scroll;
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        text-align: left;
+        color: black;
+        padding: 5px;
+        text-decoration: none;
+        display: block;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    .dropdown-content a:hover {
+        background-color: red;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+        background-color: #fff;
+    }
+
+    .dropdown:hover .dropbtn {
+        background-color: #3e8e41;
+    }
+
+    .dropbtn {
+        width: 100%;
+    }
+
+    .active {
+        background-color: red;
+    }
+
+    .dropbtn, .type-btn {
+        background-color: #04AA6D;
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        border-radius: 10px;
+    }
+        
+    .dropdown {
+        position: relative;
+        display: inline-block;
+        border-radius: 10px;
+    }
+        
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        max-height: 300px;
+        width: 300px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        overflow-y: scroll;
+        z-index: 1;
+    }
+        
+    .dropdown-content a {
+        text-align: left;
+        color: black;
+        padding: 5px;
+        text-decoration: none;
+        display: block;
+        width: 100%;
+        cursor: pointer;
+    }
+        
+    .dropdown-content a:hover {
+        background-color: #ddd;
+    }
+        
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+        
+    .dropdown:hover .dropbtn {
+        background-color: #3e8e41;
+    }
+
+    #match-data {
+        background-color: #151d33;
+        border-radius: 10px;
+        align-items: left;
+        text-align: right;
+        padding: 10px;
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    tbody tr {
+        border-top: 2px solid #273452;
+    }
+
+    .total-container {
+        padding-right: 20px;
+    }
+    
+    td, th {
+        padding: 10px;
+        width: 25%;
+        padding-right: 100px;
+        font-size: 0.9em;
+    }
+
+    .header-cell {
+        width: 25%;
+    }
+
+    th {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .td-row {
+        min-height: 25px;
+    }
+
+
+    #sport-group {
+        margin: 0px;
+        background-color: #151d33;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        padding: 20px;
+        width: calc(100% - 30);
+        padding-left: 30px;
+    }
+
+    .commence-time {
+        font-size: 10px;
+        color: #d34262;
+    }
+
+    .cell-container {
+        text-align: right;
+    }
+
+    .header-container {
+        text-align: left;
+        padding-left: 30px;
+
+    }
+
+    table {
+        margin-top: 15px;
+    }
+
+
+</style>
+

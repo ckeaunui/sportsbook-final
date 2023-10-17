@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PlusEV:Admin</title>
+    <script src="https://kit.fontawesome.com/cfe57839c8.js" crossorigin="anonymous"></script>
+
+</head>
+<body>
+    <div>
+        <h1>Admin Page</h1>
+
+        <a class="button2" href="{% url 'sports' sport_group='American Football' %}">Customer View</a>
+        <a id="logout" class="button2" href="{% url 'logout' %}">Logout</a>
+        <br>
+        <div class="row">
+            <div class="header-row">
+                <div class="col">
+                    <h3 class="card-title">Bets Pending</h3>
+                    <p class="card-title">{{ pending_bets.count }}</p>
+                </div>
+                <div class="col">
+                    <h3 class="card-title">Total Pending</h3>   
+                    <p class="card-title">${{ pending_total }}</p>
+                </div>
+                <div class="col">
+                    <h3 class="card-title">Weekly Profit</h3>
+                    <p class="card-title">$0</p>
+                </div>
+                <div class="col">
+                    <h3 class="card-title">Tokens Used (Resets monthly)</h3>   
+                    <p class="card-title">{{ tokens_used }} / {{ total_tokens }}</p>
+                </div>
+            </div>
+
+
+            <div class="col-md-6">
+                <h5>USERS</h5>
+                <hr>
+                <div class="card card-body">
+
+                    <table class="table customer-table">
+                        <tr>
+                            <th>User</th>
+                            <th>Credit</th>
+                            <th>Balance</th>
+                            <th>Pending</th>
+                            <th>Freeplay</th>
+                            <th>Weekly Profit</th>
+                            <th>Active Bets</th>
+                        </tr>
+
+                        {% for customer in customers %}
+
+                            <tr>
+                                <td>{{ customer.name }}</td>
+                                <td>{{ customer.credit }}</td>
+                                <td>{{ customer.balance }}</td>
+                                <td>{{ customer.pending }}</td>
+                                <td>{{ customer.freeplay }}</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>
+                                    <a class="button2" href="{% url 'edit_user' pk=customer.id %}">Edit</a>
+                                    <button class="button" href="#" onclick="show('popup')">Delete</button>
+
+                                    <!-- This is what will be included inside the popup -->
+                                    <div class="popup" id="popup">
+                                        <h3>Confirm User Delete</h3>
+                                        <p>Are you sure you want to permanently delete user: <span style="color:yellow;">{{ customer.name }}</span>?</p>
+                                        <p style="color:red;">Warning: This action can not be undone.</p>
+                                        <a href="{% url 'delete_user' customer.name %}" onclick="hide('popup')">Confirm</a>
+                                        <a href="#" onclick="hide('popup')">Cancel</a>
+                                    </div>
+                                    
+                                    <script>
+                                        $ = function(id) {
+                                            return document.getElementById(id);
+                                        }
+
+                                        var show = function(id) {
+                                            $(id).style.display ='block';
+                                        }
+                                        var hide = function(id) {
+                                            $(id).style.display ='none';
+                                        }
+                                    </script>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </table>
+                    
+                    <a class="button2 logout" href="{% url 'register' %}">Add User</a>
+                    <hr>
+                </div>
+
+            </div>
+            <div class="col-md-5">
+                <h5>BETS</h5>
+                <hr>
+                <div class="card card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th>User</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Wager</th>
+                            <th>To Win</th>
+                            <th>Date</th>
+                            <th>Payment Method</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    
+                        {% for order in orders %}
+                            <tr>
+                                <td>{{ order.customer.name }}</td>
+                                <td>{{ order.name}}</td>
+                                <td>{{ order.description }}</td>
+                                <td>
+                                    {% if order.price > 0 %}
+                                        +{{ order.price }}
+                                    {% else %}
+                                        {{ order.price }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ order.wager }}</td>
+                                <td>{{ order.to_win }}</td>
+                                <td>{{ order.commence_time }}</td>
+                                <td>{{ order.payment_method }}</td>
+                                <td>{{ order.status }}</td>
+                                <td>                                
+                                    <a class="button2" href="{% url 'edit_order' pk=order.id %}">Edit</a>
+                                    <a href=""><i class="fa-solid fa-trash"></i></a>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editModal" tabindex="-1" arial-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialogue modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formEdit" action="">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group validate">
+                            <input type="text" name="owner" class="form-control" placeholder="1">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                        <div class="form-group validate">
+                            <input type="text" name="name" class="form-control" placeholder="2">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                        <div class="form-group validate">
+                            <input type="text" name="task_date" class="form-control" placeholder="3">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                        <div class="form-group validate">
+                            <input type="text" name="start_time" class="form-control" placeholder="4">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                        <div class="form-group validate">
+                            <input type="text" name="end_time" class="form-control" placeholder="5">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary btnUpdate">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#table tbody").on("click", ".link-delete", function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            if(confirm("sure?")) {
+                $.ajax({
+                    url: this.attr('href'),
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(resp) {
+                        if (resp.message == 'success') {
+                            $this.parents('.record').fadeOut('slow', function() {
+                                $this.parents.record.remove();
+                            })
+
+                        } else {
+                            alert(resp.message)
+                        }
+                    },
+                    error: function(resp) {
+                        console.log('Error');
+                    }
+
+
+                });
+            }
+        });
+    </script>
+</body>
+
+<style>
+    i {
+        color: red;
+    }
+    .col {
+        display: inline;
+    }
+
+    .card-title {
+        width: 100%;
+        display: block;
+        text-align: center;
+    }
+
+    .header-row {
+        width: 100%;
+        display: inline-flex;
+        margin: 0px;
+    }
+
+    .header-row div {
+        margin: 45px;
+        background-color: #273452;
+        padding: 10px 20px;
+        border-radius: 10px;
+    }
+
+
+    .popup {
+        display: none;
+        position: fixed;
+        padding: 30px;
+        width: 280px;
+        left: 50%;
+        margin-left: -150px;
+        height: 180px;
+        top: 50%;
+        margin-top: -100px;
+        background: #273452;
+        z-index: 20;
+    }
+
+    .popup a {
+        margin: 20px;
+        padding: 10px 20px;
+        text-decoration: none;
+        background-color: #04AA6D;
+    }
+
+    #popup:after {
+        position: fixed;
+        content: "";
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: -2;
+
+    }
+
+    #popup:before {
+        position: absolute;
+        content: "";
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: #273452;
+        z-index: -1;
+    }
+
+    /* Styling buttons & webpage */
+
+    body {
+        background: #060d1f;
+        color: #fefefe;
+        font-family: Arial, sans-serif;
+        text-align: left;
+    }
+
+    .button, .button2 {
+        border: none;
+        color: #fff;
+        font-size: 15px;
+        padding: 5px 10px;
+        cursor: pointer;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .button {
+        background-color: #F04A49;
+    }
+
+    .button:hover {
+        background-color: red;
+        color: #FFF;
+    }
+
+    .button2 {
+        background-color: #04AA6D;
+    }
+
+    .button2:hover {
+        background-color: green;
+        color: #FFF;
+    }
+
+    #customer-table {
+        border-radius: 10px;
+        /*margin-right: 200px;*/
+        background-color: #151d33;
+        padding: 25px;
+        border-collapse: collapse;
+        margin-right: 350px;
+        width: 850px;  
+    }
+
+    #customer-table tr {
+        border-top: 2px solid #273452;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    th, td {
+        text-align: center;
+        align-items: center;
+        min-width: 100px;
+    }
+
+    td {
+        font-size: 15px;
+        min-height: 55px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+
+    th {
+        height: 35px;
+        vertical-align: center;
+    }    
+
+    .table-sm {
+        background-color: #151d33;
+    }
+
+    tr {
+        border-top: 2px solid #273452;
+    }
+
+</style>
+
+</html>

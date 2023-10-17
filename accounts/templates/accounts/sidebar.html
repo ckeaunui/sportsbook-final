@@ -1,0 +1,112 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sidebar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+ 
+</head>
+<body>
+    <div class="sidenav">
+      <div class="container">
+        <svg viewBox="0 0 960 300">
+          <symbol id="s-text">
+            <text text-anchor="middle" x="50%" y="50%">PlusEV</text>
+          </symbol>
+      
+          <g class = "g-ants">
+            <use xlink:href="#s-text" class="text-copy"></use>
+            <use xlink:href="#s-text" class="text-copy"></use>
+            <use xlink:href="#s-text" class="text-copy"></use>
+            <use xlink:href="#s-text" class="text-copy"></use>
+            <use xlink:href="#s-text" class="text-copy"></use>
+            <use xlink:href="#s-text" class="text-copy"></use>
+            <use xlink:href="#s-text" class="text-copy"></use>
+          </g>
+        </svg>
+      </div>
+      <hr color="273452">
+      <a id="casino" class="sidenav-link active" href="{% url 'casino' %}"><i class="fa-duotone fa-cards"></i>Casino</a>
+      <!--<a class="sidenav-link" href=""><i class="fa-regular fa-binary"></i>Prop Builder</a>-->
+      <a id="American Football" class="sidenav-link" href="{% url 'sports' sport_group='American Football' %}"><i class="fa-solid fa-football"></i>Football</a>
+      <a id="Soccer" class="sidenav-link" href="{% url 'sports' sport_group='Soccer' %}"><i class="fa-sharp fa-regular fa-futbol"></i>Soccer</a>
+      <a id="Basketball" class="sidenav-link" href="{% url 'sports' sport_group='Basketball' %}"><i class="fa-solid fa-basketball"></i></i>Basketball</a>
+      <a id="Baseball" class="sidenav-link" href="{% url 'sports' sport_group='Baseball' %}"><i class="fa-solid fa-baseball-bat-ball"></i>Baseball</a>
+      <a id="Tennis" class="sidenav-link" href="{% url 'sports' sport_group='Tennis' %}"><i class="fa-solid fa-tennis-ball"></i>Tennis</a>
+      <a id="Boxing" class="sidenav-link" href="{% url 'sports' sport_group='Boxing' %}"><i class="fa-duotone fa-boxing-glove"></i>Boxing</a>
+      <a id="Cricket" class="sidenav-link" href="{% url 'sports' sport_group='Cricket' %}"><i class="fa-solid fa-cricket-bat-ball"></i>Cricket</a>
+      <a id="Golf" class="sidenav-link" href="{% url 'sports' sport_group='Golf' %}"><i class="fa-solid fa-golf-club"></i>Golf</a>
+      <a id="Ice Hockey" class="sidenav-link" href="{% url 'sports' sport_group='Ice Hockey' %}"><i class="fa-solid fa-hockey-stick-puck"></i>Ice Hockey</a>
+      <a id="Mixed Martial Arts" class="sidenav-link" href="{% url 'sports' sport_group='Mixed Martial Arts' %}"><i class="fa-solid fa-uniform-martial-arts"></i>MMA</a>
+      <a id="Rugby Union" class="sidenav-link" href="{% url 'sports' sport_group='Rugby Union' %}"><i class="fa-duotone fa-rugby-ball"></i>Rugby</a>
+    </div>
+
+  </div>
+</body>
+
+<script>
+  document.querySelectorAll('.sidenav-link')
+    .forEach(link => {
+      if (window.location.href.includes(link.href)) {
+        link.setAttribute('aria-current', 'page')
+      }
+    })
+</script>
+
+<style>
+  i {
+    width: 25px;        
+    margin-right: 10px;
+
+  }
+
+  .sidenav {
+        height: 100%;
+        width: 200px;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        background-color: #151d33;
+        overflow-x: hidden;
+        padding-top: 20px;
+    }
+
+  .active i, .active  {
+      color: #15f489;
+      
+    }
+
+    /* Style the sidenav links and the dropdown button */
+    .sidenav a, .dropdown-btn {
+        padding: 6px 8px 6px 16px;
+        text-decoration: none;
+        font-size: 20px;
+        color: #818181;
+        display: block;
+        border: none;
+        background: none;
+        width:100%;
+        text-align: left;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .sidenav a:hover {
+        color: #15f489;
+    }
+
+    .sidenav a.active {
+      color: #15f489;
+    }
+
+    hr {
+      color: red;
+    }
+
+  
+</style>
+

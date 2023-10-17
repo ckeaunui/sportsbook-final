@@ -1,0 +1,517 @@
+{% extends 'accounts/main.html' %}
+{% load index %}
+
+
+{% block content %}
+
+    <script>
+        var csrf = document.querySelector('meta[name="csrf-token"]').content;
+        var parlay_price = '{{ parlay_price }}';
+
+        function can_afford() {
+            
+            calculate_cart_total();
+            let sum = document.getElementById("checkout-total-wager").textContent;
+            if (sum.charAt(0) == '$') {
+                sum = parseFloat(sum.substring(1));
+            }
+
+            let payment_methods = document.getElementsByName('payment-method');
+            let payment_method = 'Credit';
+            for (let i = 0; i < payment_methods.length; i++) {
+                if (payment_methods[i].checked) {
+                    payment_method = payment_methods[i].value;
+                }
+            }
+
+            let submit = document.getElementById('straight-submit');
+            let cant_afford = document.getElementById('cannot-afford-msg');
+            let balance = 0;
+
+            if (payment_method == 'Credit') {
+                balance = parseFloat("{{ customer.balance }}") + parseFloat("{{ customer.credit }}");
+            } else if (payment_method == 'Freeplay') {
+                balance = parseFloat("{{ customer.freeplay }}");
+            }
+
+            let parlay_price_div = document.getElementById("parlay-price-td");
+            if (parseInt('{{ straight_data|length }}') + parseInt('{{ parlay_data|length }}') == 0) {
+                submit.disabled = true;
+                cant_afford.style.visibility = 'hidden';
+                return;
+            }
+
+            if (sum > balance) {
+                submit.disabled = true;
+                cant_afford.style.visibility = 'visible';
+            } else {
+                submit.disabled = false;
+                cant_afford.style.visibility = 'hidden';
+            }
+        }
+
+
+        // Get the total price from each rows price
+        function update_parlay_price() {
+            let total_price = 0;
+            let total_odds = 1;
+            let prices = document.getElementsByClassName('parlay-price-col');
+
+            for (let i = 0; i < prices.length; i++) {
+                let current_price = parseFloat(prices[i].textContent);
+                if (current_price > 0) {
+                    total_odds *= 1 + parseFloat(current_price) / 100;
+                } else {
+                    total_odds *= 1 + -100 / parseFloat(current_price);
+                }
+            }
+
+            total_price = (total_odds - 1) * 100;
+            total_price = Math.round((total_price + Number.EPSILON));
+
+            let total_price_str = String(total_price);
+            if (total_price > 0) {
+                total_price_str = '+' + total_price_str;
+            }
+
+            document.getElementById('parlay-price-td').textContent = total_price_str;
+            let max_wager = 0;
+
+            if (total_price > 0) {
+                max_wager = parseFloat(5000 * 100 / total_price);
+            } else {
+                max_wager = parseFloat(5000 / -10000 * total_price);
+            }
+
+            max_wager = Math.round((max_wager + Number.EPSILON) * 100) / 100;
+            $("#parlay-wager").attr({
+                "max" : max_wager,
+            });
+
+            wager = document.getElementById('parlay-wager').value;
+            label_id = 'parlay-payout';
+            to_win(wager, total_price, label_id);
+        }
+
+
+        function to_win(value, price, label_id) {
+            if (typeof price == 'string') {
+                price = price.replace('+', '');
+                console.log(price);
+            }
+            let payout = 0;
+            if (parseInt(price) > 0) {
+                payout = parseInt(parseInt(price) * value) / 100;
+            } else {
+                payout = parseInt(value / parseInt(price) * -10000) / 100;
+            }
+            const container = document.getElementById(label_id);
+            container.textContent = '$' + String(payout);
+            calculate_cart_total();
+        }
+
+
+        function calculate_cart_total() {
+            let payouts = document.getElementsByClassName('to-win');
+            let payout = 0.0;
+            for (let i = 0; i < payouts.length; i++) {
+                if (payouts[i].textContent != '') {
+                    if (payouts[i].textContent.charAt(0) == '$') {
+                        payout += parseFloat(payouts[i].textContent.substring(1));
+                    } else {
+                        payout += parseFloat(payouts[i].textContent);
+                    }
+                }
+            }
+            payout = Math.round((payout + Number.EPSILON) * 100) / 100
+
+            let totals = document.getElementsByClassName('wager');
+            let total = 0.0;
+            for (let i = 0; i < totals.length; i++) {
+                if (totals[i].value != '') {
+                    total += parseFloat(totals[i].value)
+                }
+            }
+            total = Math.round((total + Number.EPSILON) * 100) / 100
+            document.getElementById("checkout-total-wager").textContent = '$' + total;
+            document.getElementById("checkout-total-payout").textContent = '$' + payout;
+
+        }
+
+
+        function remove_from_cart(cart_item_id, row_id, wager_price) {
+            const form_data = {
+                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+                id: cart_item_id,
+            };
+            $.ajax({
+                type : 'POST',
+                url: '/remove_from_cart/',
+                data: form_data,
+                success: function() {
+                    let row = document.getElementById(String(row_id));
+                    row.remove();
+                    // Check if bet type is parlay before running below
+                    if (row_id[0] == 'b') {
+                        parlay_rows -= 1;
+                        console.log(parlay_rows);
+
+                        if (parlay_rows <= 0) {
+                            console.log('To Delete');
+                            document.getElementById('parlay-header').remove();
+                        } else {
+                            update_parlay_price();
+                            document.getElementById('parlay-label').textContent = String(parlay_rows) + ' leg parlay';
+                        }
+
+                    }
+                    calculate_cart_total();
+                }
+            });
+        }
+
+        function edit_wager(id, wager) {
+            console.log("Editing bih");
+            const form_data = {
+                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+                id: id,
+                wager: wager,
+            };
+            $.ajax({
+                type : 'POST',
+                url: '/edit_wager/',
+                data: form_data,
+                success: function() {
+                    alert('Editing');
+                }
+            });
+
+        }
+
+
+    </script>
+
+    <h1>Checkout</h1>
+
+    <div class="checkout-container">
+        <form method="POST" action="{% url 'place_order' %}">
+            {% csrf_token %}
+            <table class="checkout-table">
+                <thead>
+                    <tr>
+                        <th class="checkout-td">Name</th>
+                        <th class="checkout-td">Outcome</th>
+                        <th class="small-col">Price</th>
+                        <th class="small-col">Wager</th>
+                        <th class="small-col">Profit</th>
+                        <th class="date-col">Date</th>
+                        <th class="small-col remove-col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for wager in straight_data %}
+                        <tr id="a:{{ forloop.counter }}">
+                            <td class="checkout-td">{{ wager.game }}</td>
+                            <td class="checkout-td">{{ wager.outcome }} {{ wager.description_suffix}}</td>
+                            <td class="small-col">
+                                {% if wager.price > 0 %}
+                                    +{{ wager.price }}
+                                {% else %}
+                                    {{ wager.price }}
+                                {% endif %}
+                            </td>
+                            <td class="small-col"><input id="{{  wager.cart_item_id }}" type="number" name="{{ wager.cart_item_id }}" class="wager" min="1" max="{{ wager.max_wager }}" step="0.01" value="{{ wager.wager }}" onchange="edit_wager(this.id, this.value);"  onkeyup="to_win(this.value, '{{ wager.price }}', 'to-win:{{ wager.cart_item_id }}'); can_afford()"></td>
+                            <td class="small-col to-win" id="to-win:{{  wager.cart_item_id }}"></td>
+                            <td class="date-col">{{ wager.date }}</td>
+                            <td class="small-col remove-col">
+                                <button class="remove-from-cart button3" type="button" value="{{ wager.cart_item_id }}" onclick="remove_from_cart(this.value, 'a:{{ forloop.counter }}', '{{ wager.price }}')">Remove</button>
+                            </td>
+                        </tr>
+                        <script>
+                            to_win('{{ wager.wager }}', '{{ wager.price }}', 'to-win:{{ wager.cart_item_id }}');
+                            can_afford();
+                        </script>
+                    {% endfor %}
+                    {% if parlay_data|length > 0 %}
+
+                        <tr class="parlay-header" id="parlay-header">
+                            <td class="checkout-td" id="parlay-label">{{ parlay_data|length }} leg parlay</td>
+                            <td class="checkout-td"></td>
+                            <td class="small-col" id="parlay-price-td">
+                                {% if parlay_price > 0 %}
+                                    +{{ parlay_price }}
+                                {% else %}
+                                    {{ parlay_price }}
+                                {% endif %}
+                            </td>
+                            <td class="small-col"><input type="number" id="parlay-wager" name="parlay-wager" class="wager" value="0" min="0.01" max="{{ parlay_max_wager }}" step="0.01" onkeyup="to_win(this.value, parseInt(document.getElementById('parlay-price-td').textContent), 'parlay-payout'); can_afford()"></td>
+                            <td class="small-col to-win" id="parlay-payout">0</td>
+                            <td class="date-col"></td>
+                            <td class="small-col remove-col"></td>
+                        </tr>
+                        
+                        {% for wager in parlay_data %}
+                            <tr class="parlay-row" id="b:{{ forloop.counter }}">
+                                <td class="checkout-td parlay-row-col1">{{ wager.game }}</td>
+                                <td class="checkout-td">{{ wager.outcome }} {{ wager.description_suffix}}</td>
+                                <td class="small-col parlay-price-col">
+                                    {% if wager.price > 0 %}
+                                        +{{ wager.price }}
+                                    {% else %}
+                                        {{ wager.price }}
+                                    {% endif %}
+                                </td>
+                                <td class="small-col"></td>
+                                <td class="small-col"></td>
+                                <td class="date-col">{{ wager.date }}</td>
+                                <td class="small-col remove-col">
+                                    <button class="remove-from-cart button3" type="button" value="{{ wager.cart_item_id }}" onclick="remove_from_cart(this.value, 'b:{{ forloop.counter }}', '{{ wager.price }}')">Remove</button>
+                                </td>
+                                
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    <tr class="checkout-total-row">
+                        <td class="checkout-td"></td>
+                        <td class="checkout-td"></td>
+                        <td class="small-col checkout-total-cell" >Total:</td>
+                        <td class="small-col" id="checkout-total-wager">$100</td>
+                        <td class="small-col" id="checkout-total-payout">$100</td>
+                        <td class="date-col"></td>
+                        <td class="small-col remove-col"></td>
+                    </tr>
+                    <tr class="borderless">
+                        <td class="checkout-td"></td>
+                        <td class="small-col" id="payment-method-cell" colspan="2">Payment Method:</td>
+                        <td class="small-col" id="checkout-total-wager" colspan="2">
+                            <label class="payment-method-label">
+                                <div class="container-row">
+                                    <div class="layer1">
+                                        <input class="payment-method" name="payment-method" value="Credit" type="radio" onchange="can_afford()" checked>
+                                    </div>
+                                    <div class="layer2">
+                                        <span>Credit line</span>
+                                    </div>
+                                </div>
+                            </label>
+                        </td>
+                        <td class="small-col checkout-payment-method">
+                            <label class="payment-method-label">
+                                <div class="container-row">
+                                    <div class="layer1">
+                                        <input class="payment-method" name="payment-method" value="Freeplay" type="radio" onchange="can_afford()">
+                                    </div>
+                                    <div class="layer2">
+                                        <span>Freeplay</span>
+                                    </div>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr class="borderless">
+                        <td class="checkout-td"></td>
+                        <td class="checkout-td"></td>
+                        <td class="small-col" colspan="4">
+                            <div class="payment-div">
+                                <button class="button2 checkout-button" type="button" onclick="javascript:history.back()">Keep Shopping</button>
+                            </div>
+                        </td>
+                        <td class="small-col"></td>
+                    </tr>
+                    <tr class="borderless">
+                        <td class="checkout-td"></td>
+                        <td class="small-col"></td>
+                        <td class="small-col" colspan="4">
+                            <div class="payment-div">
+                                <input id="straight-submit" class="button checkout-button" type="submit" value="Confim Order">
+                                <span  id="cannot-afford-msg">*You cannot afford this purchase</span>
+                                <p class="payment-div">*Note: Any change in odds during checkout will be applied to this order.  Exact prices may vary; refresh the page for updated prices</p>
+
+                            </div>
+                        </td>
+                        <td class="small-col"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <script>
+            var parlay_rows = '{{ parlay_data|length }}';
+            can_afford();
+            calculate_cart_total();
+            methods = document.getElementsByName("payment-method");
+            for (let i = 0; i < methods.length; i++) {
+                methods[i].onclick = can_afford();
+            }
+            let parlay_price_div = document.getElementById("parlay-price-td");
+            if (parseInt('{{ straight_data|length }}') + parseInt('{{ parlay_data|length }}') == 0) {
+                document.getElementById('straight-submit').disabled = true;
+            }
+
+        </script>
+    </div>
+
+    <style>
+        td {
+            padding: 20px;
+        }
+
+        table {
+            border-collapse: collapse; 
+            width: 100%;
+            background-color: #151d33;
+            border-radius: 10px;
+
+        }
+
+        h1 {
+            margin: 0px;
+            background-color: #151d33;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            padding: 20px;
+            width: calc(100% - 30);
+            padding-left: 30px;
+        }
+
+        .small-col {
+            padding: 10px;
+            width: auto;
+            text-align: left;
+
+        }
+
+        .checkout-td {
+            padding: 10px;
+            text-align: left;
+
+        }
+
+        .date-col {
+            padding: 0px;
+            width: auto;
+            text-align: left;
+            font-size: 0.8e;
+        }
+
+        th.date-col, th.checkout-td, th.small-col {
+            font-size: 1.2em;
+            padding: 15px 10px;
+        }
+
+        .checkout-button {
+            width: 100%;
+            background-color: red;
+        }
+
+        #straight-submit:disabled {
+            background: #999;
+            color: #555;
+            cursor: not-allowed;
+        }
+
+        #cannot-afford-msg {
+            color: red;
+            display: hidden;
+        }
+
+        .parlay-row {
+            border-top: 0.5px solid #273452;
+        }
+
+        .parlay-row td {
+
+            font-size: 0.8em;
+        }
+
+        .parlay-row td button {
+            font-size: 0.6em;
+        }
+
+        #parlay-label {
+            padding-top: 20px;
+            padding-bottom: 20px;
+
+        }
+
+        .parlay-row-col1 {
+            padding-left: 30px;
+        }
+
+        .payment-div {
+            max-width: 400px;
+            margin: auto;
+        }
+
+        p.payment-div {
+            font-size: 0.7em;
+        }
+
+        .payment {
+            margin-top: 10px;
+            background-color: #151d33;
+            padding: 10px;
+            padding-bottom: 35px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+        #checkout-total-payout {
+            color: #15f489;
+        }
+
+        #payment-method-cell, .checkout-total-cell {
+            text-align: right;
+
+        }
+
+        .borderless {
+            border-top: none;
+        }
+
+        
+        input[type="radio"] {
+            width: 150px;
+            height: 30px;
+            border-radius: 10px;
+            border: 2px solid #04AA6D;
+            background-color: #151d33;
+            -webkit-appearance: none; /*to disable the default appearance of radio button*/
+            -moz-appearance: none;
+        }
+
+        input[type="radio"]:focus { /*no need, if you don't disable default appearance*/
+            outline: none; /*to remove the square border on focus*/
+        }
+
+        input[type="radio"]:checked { /*no need, if you don't disable default appearance*/
+            background-color: #04AA6D;
+        }
+
+        input[type="radio"]:checked ~ span:first-of-type {
+            color: white;
+        }
+
+        label span:first-of-type {
+            left: 15px;
+            font-size: 15px;
+            color: #fff;
+            margin: 0px;
+        }
+
+        label span {
+            position: relative;
+            top: -28px;
+        }
+
+
+        .remove-col {
+            padding-right: 0px;
+        }
+
+        .payment-method-label {
+            width: 100px;
+        }
+
+
+
+    </style>
+
+{% endblock %}

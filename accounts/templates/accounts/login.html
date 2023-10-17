@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+	<title>Login</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+
+
+	<style>
+		body,
+		html {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			background: #060d1f !important;
+		}
+
+		.user_card {
+			width: 350px;
+			margin-top: auto;
+			margin-bottom: auto;
+			background: #273452;
+			position: relative;
+			display: flex;
+			justify-content: center;
+			flex-direction: column;
+			padding: 10px;
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			-moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			border-radius: 5px;
+
+		}
+
+		.form_container {
+			margin-top: 20px;
+		}
+
+		#form-title{
+			color: #fff;
+			
+		}
+
+		.login_btn {
+			width: 100%;
+			background: #d34262 !important;
+			color: white !important;
+		}
+		.login_btn:focus {
+			box-shadow: none !important;
+			outline: 0px !important;
+		}
+		.login_container {
+			padding: 0 2rem;
+		}
+		.input-group-text {
+			background: #f7ba5b !important;
+			color: white !important;
+			border: 0 !important;
+			border-radius: 0.25rem 0 0 0.25rem !important;
+		}
+		.input_user,
+		.input_pass:focus {
+			box-shadow: none !important;
+			outline: 0px !important;
+		}
+
+		#messages{
+			background-color: grey;
+			color: #fff;
+			padding: 10px;
+			margin-top: 10px;
+		}
+
+		.mt-4 {
+			color: white;
+		}
+
+		.ml-2 {
+			color: #d34262;
+		}
+
+
+		.container {
+		/*   border:1px solid red; */
+		align-items: center;
+		
+		}
+
+		svg {
+			display: block;
+			font: 11.5em 'Montserrat';
+			margin: 0 auto;
+		}
+
+		.text-copy {
+			fill: none;
+			stroke: white;
+			stroke-dasharray: 6% 29%;
+			stroke-width: 7px;
+			stroke-dashoffset: 0%;
+			animation: stroke-offset 5.5s infinite linear;
+		}
+
+		.text-copy:nth-child(1){
+			stroke: #5c98fb;
+			animation-delay: -1;
+			visibility: hidden;
+		}
+		
+
+		.text-copy:nth-child(2){
+			stroke: #88a9fc;
+			animation-delay: -2s;
+		}
+
+		.text-copy:nth-child(3){
+			stroke: #9688fb;
+			animation-delay: -3s;
+		}
+
+		.text-copy:nth-child(4){
+			stroke: #7a5ef9;
+			animation-delay: -4s;
+		}
+
+		.text-copy:nth-child(5){
+			stroke: #a6b5fc;
+			animation-delay: -5s;
+		}
+
+		.text-copy:nth-child(6){
+			stroke: #5d6fcd;
+			animation-delay: -6s;
+		}
+
+		.text-copy:nth-child(7){
+			stroke: #324ccf;
+			animation-delay: -7s;
+		}
+
+		@keyframes stroke-offset{
+			100% {stroke-dashoffset: -35%;}
+		}
+
+		.container {
+			width: 100vw;
+			
+		}
+	</style>
+
+</head>
+<body>
+	<div class="container">
+        <svg viewBox="0 0 960 300">
+          <symbol id="s-text">
+            <text text-anchor="middle" x="50%" y="50%">PlusEV</text>
+          </symbol>
+      
+          <g class = "g-ants">
+            <use xlink:href="#s-text" class="text-copy"></use>
+            <use xlink:href="#s-text" class="text-copy"></use>
+            <use xlink:href="#s-text" class="text-copy"></use>
+            <use xlink:href="#s-text" class="text-copy"></use>
+            <use xlink:href="#s-text" class="text-copy"></use>
+            <use xlink:href="#s-text" class="text-copy"></use>
+            <use xlink:href="#s-text" class="text-copy"></use>
+          </g>
+        </svg>
+	</div>
+	<div class="">
+		<div class="d-flex justify-content-center h-100">
+			<div class="user_card">
+				<div class="d-flex justify-content-center">
+					<h3 id="form-title">LOGIN</h3>
+				</div>
+				<div class="d-flex justify-content-center form_container">
+					<form method="POST" action="">
+						{% csrf_token %}
+						<div class="input-group mb-3">
+							<div class="input-group-append">
+								<span class="input-group-text"><i class="fas fa-user"></i></span>
+							</div>
+							<input type="text" name="username" placeholder="Username..." class="form-control">
+						</div>
+						<div class="input-group mb-2">
+							<div class="input-group-append">
+								<span class="input-group-text"><i class="fas fa-key"></i></span>
+							</div>
+								<input type="password" name="password" placeholder="Password..." class="form-control" >
+						</div>
+						<div class="d-flex justify-content-center mt-3 login_container">
+							<input class="btn login_btn" type="submit" value="Login">
+						</div>
+					</form>
+				</div>
+				{% for message in messages %}
+					<p id="messages">{{ message }}</p>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,9 @@
+{% extends 'accounts/main.html' %}
+
+{% block content %}
+    <h2>Order Placed</h2>
+    <div>
+        <a href="{% url 'user_page' %}">View Orders</a>
+        <a href="{% url 'sports' sport_group='American Football' %}">Continue Shopping</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CRM</title>
+
+ 
+</head>
+<body>
+    
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ form }}
+        <a href="{% url 'dashboard' %}">Cancel</a>
+        <input type="Submit">
+    </form>
+</body>
+<style>
+
+</style>
+</html>

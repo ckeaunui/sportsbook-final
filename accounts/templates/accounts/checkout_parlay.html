@@ -1,0 +1,179 @@
+{% extends 'accounts/main.html' %}
+{% load index %}
+
+
+{% block content %}
+
+<script>
+    function preback() {
+        window.history.forward();
+    }
+    setTimeout("preback()", 0);
+    window.onunload = function(){null};
+
+    function can_afford_p() {
+        let submit = document.getElementById('parlay-submit');
+        let wager = document.getElementById('wager-input');
+        let cant_afford = document.getElementById('cannot-afford-msg-1');
+        let payment_method = document.querySelector('input[name="payment-method"]:checked').value;
+        console.log(payment_method);
+        let balance = 0
+
+        if (payment_method == 'credit') {
+            balance = parseFloat("{{ customer.balance }}") + parseFloat("{{ customer.credit }}");
+        } else if (payment_method == 'freeplay') {
+            balance = parseFloat("{{ customer.freeplay }}");
+        }
+
+        if (parseFloat(wager.value) > balance) {
+            submit.disabled = true;
+            cant_afford.style.visibility = 'visible';
+
+        } else {
+            submit.disabled = false;
+            cant_afford.style.visibility = 'hidden';
+        }
+    }
+
+    function to_win_p(value, price) {
+        let payout = 0;
+        if (price > 0) {
+            payout = parseInt(price * value) / 100;
+        } else {
+            payout = parseInt(value / price * -10000) / 100;
+        }
+        if (payout > 5000) {
+            payout = 5000;
+        }
+        const container = document.getElementById('to-win-parlay');
+        container.textContent = payout;
+    }
+
+</script>
+
+    <h1>Checkout</h1>
+
+    <div class="checkout-container">
+        <form method="POST" action="{% url 'confirm_bet_parlay' %}">
+            {% csrf_token %}
+            <table class="checkout-table">
+
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Game</th>
+                        <th>Outcome</th>
+                        <th class="price-col">Price</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order_item in order_items %}
+                        <tr>
+                            <td>{{ order_item.product.match.commence_time }}</td>
+                            <td>{{ order_item.product.match.match_name }}</td>
+                            <td>{{ order_item.product.description }}</td>
+                            <td class="price-col">
+                                {% if order_item.price > 0 %}
+                                    +{{ order_item.price }}
+                                {% else %}
+                                    {{ order_item.price }}
+                                {% endif %}
+                            </td>
+                            <td><a href="{% url 'remove_from_cart' pk=order_item.id bet_type='parlay' %}">Delete</a></td>
+                            <input type="hidden" name="order-item-id:{{ order_item.id }}" value="{{ order_item.id }}">
+                        </tr>
+                    {% endfor %}
+                    <tr id="checkout-row">
+                        <td></td>
+                        <td>Total:</td>
+                        <td>
+                            <p>Wager: <input id="wager-input" name="wager" type="number" min="0" max="{{ max_wager }}" step="0.01" value="0" onkeyup="to_win_p(this.value, '{{ odds }}'); can_afford_p()"></p>
+                            <p>( max ${{ max_wager }} )</p>
+                        </td>
+                        <td class="price-col">{% if odds > 0 %}
+                            +{{ odds }}
+                        {% else %}
+                            {{ odds }}
+                        {% endif %}</td>
+                        <td>To Win: $<span id="to-win-parlay">0</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div>
+                <p>Payment Method:</p>
+                <p><input class="payment-method" name="payment-method" value="credit" type="radio" onchange="can_afford_p()" checked>Credit Line</button></p>
+                <p><input class="payment-method" name="payment-method" value="freeplay" type="radio" onchange="can_afford_p()">Freeplay</button></p>
+            </div>
+            <div>
+                <a class="button2" href="javascript:history.back()">Keep Shopping</a>
+                <input id="parlay-submit" class="button2" type="submit" value="Confim Order">
+                <span id="cannot-afford-msg-1">*You cannot afford this purchase</span>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        can_afford_p();
+    </script>
+
+    <style>
+
+        tr {
+            border: solid 4px #273452;
+
+        }
+
+        table {
+            border-collapse: collapse; 
+            width: 100%;
+            background-color: #151d33;
+            border-radius: 10px;
+
+        }
+
+        
+        #checkout-totals-row {
+            border-top: 3px solid red;
+        }
+
+        #checkout-container {
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0px;
+            background-color: #151d33;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            padding: 20px;
+            width: calc(100% - 30);
+            padding-left: 30px;
+        }
+
+        #checkout-row {
+            background-color: #273452;
+        }
+
+        .td {
+            width: 22.5%;
+        }
+
+        .price-col {
+            width: 10%;
+        }
+
+        #parlay-submit:disabled {
+            background: #999;
+            color: #555;
+            cursor: not-allowed;
+        }
+
+        #cannot-afford-msg-1 {
+            color: red;
+        }
+
+    </style>
+
+<!-- UNDO UNTIL HERE -->
+{% endblock %}

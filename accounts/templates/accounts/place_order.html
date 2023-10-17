@@ -1,0 +1,16 @@
+{% extends 'accounts/main.html' %}
+
+{% block content %}
+
+<div>
+    <h1>Order Placed</h1>
+    <a href="{% url 'sports' sport_group='American Football' %}">View Orders</a>
+    <a href="{% url 'sports' sport_group='American Football' %}">Keep Shopping</a>
+</div>
+<style>
+    body {
+        background-color: black;
+        color: blueviolet;
+    }
+</style>
+{% endblock %}

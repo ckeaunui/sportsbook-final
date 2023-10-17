@@ -1,0 +1,336 @@
+{% extends 'accounts/main.html' %}
+
+{% block content %}
+
+    <script>
+        let links = document.getElementsByClassName('sidenav-link');
+        for (let i = 0; i < links.length; i++) {
+            links[i].className = 'sidenav-link';
+        }
+        let active_link = document.getElementById("{{ sport_group }}");
+        active_link.className += " active";
+
+        function set_bet_type() {
+            checkout_form = document.getElementById('checkout-form');
+        }
+
+        function to_win(price, value) {
+            let max_payout = 0;
+            max_payout = parseInt(price * value) / 100;
+            const container = document.getElementById('to-win-col');
+            container.textContent = max_payout;
+        }
+
+        var csrf = document.querySelector('meta[name="csrf-token"]').content;
+        
+        
+        function show_props(match_id) {
+            document.getElementById('prop-popup').hidden = false;
+            let header = document.getElementById("prop-popup-header");
+            header.textContent = "Prop Data Is Currently Unavailable";s
+
+        }
+
+        function close_props() {
+            document.getElementById('prop-popup').hidden = true;
+        }
+
+
+        function toggle_checkbox(name) {
+            
+
+        }
+
+
+    </script>
+
+
+
+    <h1 id="sport-group">{{ league_title }}</h1>
+    <form id="checkout-form" class="table-form" action={% url 'checkout' %} method="POST">
+        {% csrf_token %}
+        <div>
+            <div class="dropdown">
+                <button class="dropbtn">Leagues</button>
+                <div class="dropdown-content">
+                    {% for league in leagues %}  
+                        <a id="{{ sport_group }}" href="{% url 'load_table' sport_group=sport_group league_key=league.key bet_type='straight' %}">{{ league.title }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <span class="bet-type">
+                {% if bet_type == 'straight' %}
+                    <a id="straight-button" class="parlay-straight-toggle button" href="{% url 'load_table' sport_group=sport_group bet_type='straight' league_key=league_key %}">Straight</a>
+                    <a id="parlay-button" class="parlay-straight-toggle button2" href="{% url 'load_table' sport_group=sport_group bet_type='parlay' league_key=league_key %}">Parlay</a>
+                {% else %}
+                    <a id="straight-button" class="parlay-straight-toggle button2" href="{% url 'load_table' sport_group=sport_group bet_type='straight' league_key=league_key %}">Straight</a>
+                    <a id="parlay-button" class="parlay-straight-toggle button" href="{% url 'load_table' sport_group=sport_group bet_type='parlay' league_key=league_key %}">Parlay</a>
+                {% endif %}
+                    <input class="button2" type="submit" value="Checkout">
+            </span>
+
+
+        </div>
+        <table id="match-data">
+            <thead>
+                <tr>
+                    <th><div class="header-container">Match</div></th>
+                    <th>Spread</th>
+                    <th>Moneyline</th>
+                    <th><div class="total-container">Total</div></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if matches.count == 0%}
+                    <tr>
+                        <td class="cell-container">No wagers available</td>
+                    </tr>
+                {% else %}
+                    {% for match in matches %}
+                        {% if bet_type == 'straight' %}
+
+                            <tr>
+                                <td class="header-cell">
+                                    <div class="cell-container header-container">
+                                        <div class="commence-time td-row">{{ match.commence_time }} EST</div>
+                                        <div class="td-row">{{ match.team1 }}</div>
+                                        <div class="td-row">{{ match.team2 }}</div>
+                                        {% if has_draw %}
+                                            <div class="td-row">Draw</div>
+                                        {% else %}
+                                            <div class="td-row"></div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-container spread-container">
+                                        <div class="td-row"></div>
+                                        {% for bet in match.children.all %}
+                                            {% if bet.key == 'spreads' %}
+                                                <div class="td-row">
+                                                    <label for="wager">{{ bet.display_data }}
+                                                        <input type="number" name="bet-id:{{ bet.id }}" class="wager" id="{{ bet.id }}" min="1" max="{{ bet.max_wager }}" step="0.01">
+                                                    </label>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}     
+                                        <div class="td-row"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-container h2h-container">
+                                        <div class="td-row"></div>
+                                        {% for bet in match.children.all %}
+                                            {% if bet.key == 'h2h' %}
+                                                <div class="td-row">
+                                                    <label for="wager">{{ bet.display_data }}
+                                                        <input type="number" name="bet-id:{{ bet.id }}" class="wager" id="{{ bet.id }}" min="1" max="{{ bet.max_wager }}" step="0.01">
+                                                    </label>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if not has_draw %}
+                                            <div class="td-row"></div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-container total-container">
+                                        <div class="td-row"></div>
+                                        {% for bet in match.children.all %}
+                                            {% if bet.key == 'totals' %}
+                                                <div class="td-row">
+                                                    <label for="wager">{{ bet.display_data }}
+                                                        <input type="number" name="bet-id:{{ bet.id }}" class="wager" id="{{ bet.id }}" min="1" max="{{ bet.max_wager }}" step="0.01">
+                                                    </label>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <div class="td-row"></div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        {% else %}
+                            <tr>
+                                <td class="header-cell">
+                                    <div class="cell-container header-container">
+                                        <div class="commence-time td-row">{{ match.commence_time }} EST</div>
+                                        <div class="td-row">{{ match.team1 }}</div>
+                                        <div class="td-row">{{ match.team2 }}</div>
+                                        {% if has_draw %}
+                                            <div class="td-row">Draw</div>
+                                        {% endif %}
+                                        <button class="props-btn" type="button" value="{{ match.match_id}}" onclick="show_props(this.value)">Props+</button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-container spread-container">
+                                        <div class="td-row"></div>
+                                        {% for bet in match.children.all %}
+                                            {% if bet.key == 'spreads' %}
+                                                <div class="td-row">
+                                                    <label for="wager">{{ bet.display_data }}
+                                                        <input type="checkbox" name="{{ match.id }}-wager" class="wager" id="{{ bet.id }}" value="{{ bet.id }}">
+                                                    </label>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}     
+                                        <div class="td-row"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-container h2h-container">
+                                        <div class="td-row"></div>
+                                        {% for bet in match.children.all %}
+                                            {% if bet.key == 'h2h' %}
+                                                <div class="td-row">
+                                                    <label for="wager">{{ bet.display_data }}
+                                                        <input type="checkbox" name="{{ match.id }}-wager" class="wager" id="{{ bet.id }}" value="{{ bet.id }}">
+                                                    </label>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if not has_draw %}
+                                            <div class="td-row"></div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-container total-container">
+                                        <div class="td-row"></div>
+                                        {% for bet in match.children.all %}
+                                            {% if bet.key == 'totals' %}
+                                                <div class="td-row">
+                                                    <label for="wager">{{ bet.display_data }}
+                                                        <input type="checkbox" name="{{ match.id }}-total" class="wager" id="{{ bet.id }}" value="{{ bet.id }}">
+                                                    </label>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <div class="td-row"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+        {% for k, v in in_cart.items %}
+            <script>
+                if (document.getElementById('{{ k }}') !== null) {
+                    
+                    if ("{{ v }}" > 0) {
+                        let box = document.getElementById('{{ k }}');
+                        box.value = parseFloat("{{ v }}");
+
+                    } else {
+                        let box = document.getElementById('{{ k }}');
+                        box.checked = 'checked';
+                    }
+                }
+                                
+            </script>
+        {% endfor %}
+    </form>
+    <div id="prop-popup" hidden>
+        <h1 id="prop-popup-header"></h1>
+        <hr color="d34262">
+        <table id="prop-options"></table>
+        <button onclick="close_props()">Close</button>
+
+    </div>
+    <script>
+        var checkboxes = document.querySelectorAll(".wager");
+        checkboxes.forEach(el => el.addEventListener('change', event => {
+            event.preventDefault();
+            var bet_type = '{{ bet_type }}';
+            var value = el.value;
+            console.log("Sent-val: ", value, typeof value);
+
+            $('input[type="checkbox"]').on('change', function() {
+                $('input[name="' + this.name + '"]').not(this).prop('checked', false);
+                $('input[name="' + this.name + '"]').not(this).prop('checked', false);
+
+            });
+
+            const form_data = {
+                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+                value: value,
+                bet_type: bet_type,
+                name: el.name,
+            };
+            $.ajax({
+                type : 'POST',
+                url: '/add_to_cart/',
+                data: form_data,
+                success: function() {
+                    console.log('updated')
+                }
+            });
+        }));
+
+        /*
+        var checkboxes = document.querySelectorAll(".props-btn");
+        checkboxes.forEach(el => el.addEventListener('click', event => {
+            event.preventDefault();
+            var value = el.value;
+            console.log("Sent-val: ", value, typeof value);
+            const form_data = {
+                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+                value: value,
+            };
+            $.ajax({
+                type : 'POST',
+                url: '/prop_clicked/',
+                data: form_data,
+                success: function() {
+                    console.log('clicked')
+                }
+            });
+        }));*/
+
+    </script>
+    <style>
+        input[type="checkbox"]:not(:checked), 
+        input[type="checkbox"]:checked {
+        position: absolute;
+        cursor: pointer;
+        }
+
+        input[type="number"].wager {
+            margin-left: 5px;
+        }
+
+        #prop-popup {
+            background-color: #273452;
+            height: 85vh;
+            width: 70vw;
+            position: fixed;
+            margin: auto;
+            left: 15vw;
+            top: 7.5vh;
+            z-index: 100;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-y: scroll;
+
+        }
+
+        .props-btn {
+            background-color: #d34262;
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            padding: 5px 7px;
+            border-radius: 3px;
+            cursor: pointer;
+
+        }
+
+    </style>
+
+<!-- UNDO UNTIL HERE -->
+{% endblock %}

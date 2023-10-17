@@ -1,0 +1,11 @@
+{% extends 'accounts/main.html' %}
+
+
+{% block content %}
+
+<div>
+    {% csrf_token %}
+    <h1>User</h1>
+    Name: {{ customer.name }}
+</div>
+{% endblock %}
