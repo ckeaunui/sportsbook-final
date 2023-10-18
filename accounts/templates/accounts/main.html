@@ -41,7 +41,8 @@
 </html>
 
 
-<style>  Rename all these things to allow for glyphicon
+<style>
+
     html {
         font-family: monospace;
     }
@@ -56,7 +57,6 @@
     #block {
         margin-left: 200px;
         margin-top: 61px;
-        min-width: 800px;
 
     }
 
@@ -385,6 +385,58 @@
 
     table {
         margin-top: 15px;
+    }
+
+    @media only screen and (max-width: 800px) {
+        #block {
+            margin-left: 200px;
+            margin-top: 61px;
+            font-size: 10px;
+        }
+
+        .parlay-straight-toggle {
+            font-size: 2px;
+        }
+
+        .nav-val-label {
+            font-size: 8px;
+
+        }
+
+        #navbar-row {
+            width: 100%;
+        }
+
+        .nav-link {
+            font-size: 15px;
+            padding: 8px 16px;
+            margin: 0px;
+            text-align: center;
+        }
+    }
+
+    @media only screen and (max-width: 550px) {
+      
+
+        .sidenav, .side-nav {
+            display: none;
+
+        }
+
+        #block {
+            width: 100%;
+            margin-left: 0px;
+        }
+
+        #navbar-row {
+            margin-left: 0px;
+        }
+
+        .nav-val-label {
+            margin: 0px;
+        }
+
+
     }
 
 

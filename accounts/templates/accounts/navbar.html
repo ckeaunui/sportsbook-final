@@ -1,18 +1,17 @@
 <span id="navbar-row">
     <span class="navbar-data" id="balance-data">
-        <span class="nav-val-label"><p>Available:</p><p>&ensp;${{ request.user.customer.credit }}</p></span>
-        <span class="nav-val-label"><p>Balance:</p><p id="balance">&ensp;${{ request.user.customer.balance }}</p></span>
-        <span class="nav-val-label"><p>Pending:</p><p>&ensp;${{ request.user.customer.pending }}</p></span>
-        <span class="nav-val-label"><p>Freeplay:</p><p>&ensp;${{ request.user.customer.freeplay }}</p></span>
-        <div id="account-buttons">
-            <a class="nav-link" id="profile-button" href="{% url 'user_page' %}" id="account-link"><i class="glyphicon glyphicon-user"></i> {{ request.user }}</a>
+        <div class="nav-val-label"><p>Available:</p><p class="money-display">${{ request.user.customer.credit }}</p></div>
+        <div class="nav-val-label"><p>Balance:</p><p class="money-display" id="balance">${{ request.user.customer.balance }}</p></div>
+        <div class="nav-val-label"><p>Pending:</p><p class="money-display">${{ request.user.customer.pending }}</p></div>
+        <div class="nav-val-label"><p>Freeplay:</p><p class="money-display">${{ request.user.customer.freeplay }}</p></div>
+        <div class="nav-val-label" id="account-buttons">
+            <a class="nav-link" id="profile-button" href="{% url 'user_page' %}" id="account-link">{{ request.user }}</a>
             <a class="nav-link" id="logout" href="{% url 'logout' %}">Logout</a>
         </div>
     </span>
 </span>
 
 <style>
-
     #navbar-row {
         height: 50px;
         background-color: #151d33;
@@ -23,7 +22,6 @@
         margin-left: 200px;
         width: calc(100% - 200px);
         border-bottom: 3px solid #273452;
-        min-width: 800px;
         
     }
 
@@ -36,6 +34,11 @@
         margin-left: 10px;
 
     }
+    .nav-val-label p {
+        margin: 0px;
+        padding-top: 5px;
+
+    }
 
     .navbar-data span {
         display: flex;
@@ -44,11 +47,12 @@
     }
 
     .nav-link {
+        
         display: inline-block;
         background-color: #f44336;
         color: #FFFFFF;
         padding: 16px 30px;
-        text-align: center;
+        text-align: left;
         text-decoration: none;
         font-size: 16px;
         opacity: 0.9;
@@ -84,6 +88,13 @@
 
     .negative {
         color: red;
+    }
+
+    .money-display {
+        width: 100%;
+        margin: 0px;
+        padding: 0px;
+        text-align: center;
     }
 
 </style>
