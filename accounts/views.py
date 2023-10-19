@@ -121,8 +121,10 @@ def userPage(request):
     if request.user.groups.exists():
         group = request.user.groups.all()[0].name
     if group == "customer":
+        customer = request.user.customer
         orders = Order.objects.filter(status='Pending')
-        context = {'orders': orders}
+        user_orders = orders.filter(customer=customer)
+        context = {'user_orders': user_orders}
         return render(request, 'accounts/profile.html', context)
     elif group == "admin":
         return redirect('dashboard')
@@ -464,7 +466,6 @@ def add_to_cart(request):
             product_id = request.POST.get('value', 'None')
             product = Product.objects.get(pk=product_id)
             cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product, wager_type='Parlay')
-            print("comparing: ", cart_item, cart_item.wager_type, cart_item.product.match, cart_item.product.key)
 
             if created:
                 cart_item.save()
@@ -473,10 +474,6 @@ def add_to_cart(request):
                     if i.wager_type == 'Parlay':
                         if i == cart_item:
                             continue
-
-
-                        # Check if the current cart item conflicts with any of the existing items in the cart
-                        print(i, i.wager_type, i.product.match, i.product.key)
 
                         if (cart_item.product.key == 'h2h' or cart_item.product.key == 'spreads'):
                             print('check1')
@@ -654,7 +651,6 @@ def place_wager(request):
 @allowed_users(allowed_roles=['customer', 'admin'])
 def add_to_balance(request):
     amount = request.POST.get('amount', 'None')
-    print('aa', amount)
     customer = request.user.customer
     customer.balance += float(amount)
     customer.balance = round(customer.balance, 2)

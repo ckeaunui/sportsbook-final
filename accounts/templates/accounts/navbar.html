@@ -1,10 +1,11 @@
 <span id="navbar-row">
     <span class="navbar-data" id="balance-data">
+        <button class="sidebar-btn" id="sidebar-toggle-btn" type="button" onclick="openSideBar()"><i class="fa-regular fa-bars"></i></button>
         <div class="nav-val-label"><p>Available:</p><p class="money-display">${{ request.user.customer.credit }}</p></div>
         <div class="nav-val-label"><p>Balance:</p><p class="money-display" id="balance">${{ request.user.customer.balance }}</p></div>
         <div class="nav-val-label"><p>Pending:</p><p class="money-display">${{ request.user.customer.pending }}</p></div>
         <div class="nav-val-label"><p>Freeplay:</p><p class="money-display">${{ request.user.customer.freeplay }}</p></div>
-        <div class="nav-val-label" id="account-buttons">
+        <div id="account-buttons">
             <a class="nav-link" id="profile-button" href="{% url 'user_page' %}" id="account-link">{{ request.user }}</a>
             <a class="nav-link" id="logout" href="{% url 'logout' %}">Logout</a>
         </div>
@@ -18,11 +19,11 @@
         color: #fff;
         position: fixed;
         top: 0%;
-        z-index: 99;
+        z-index: 5;
         margin-left: 200px;
         width: calc(100% - 200px);
         border-bottom: 3px solid #273452;
-        
+        overflow-x: hidden;        
     }
 
     .navbar-data {
@@ -37,13 +38,8 @@
     .nav-val-label p {
         margin: 0px;
         padding-top: 5px;
+        margin-right: 15px;
 
-    }
-
-    .navbar-data span {
-        display: flex;
-        justify-content: space-between;
-        min-width: 100px;
     }
 
     .nav-link {
@@ -78,8 +74,7 @@
     }
 
     .account-buttons {
-        position: absolute;
-
+        right: 0px;
     }    
 
     .positive {
@@ -95,6 +90,10 @@
         margin: 0px;
         padding: 0px;
         text-align: center;
+    }
+
+    .sidebar-btn {
+        display: none;  
     }
 
 </style>

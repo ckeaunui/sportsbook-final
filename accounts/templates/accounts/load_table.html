@@ -42,7 +42,7 @@
     <h1 id="sport-group">{{ league_title }}</h1>
     <form id="checkout-form" class="table-form" action={% url 'checkout' %} method="POST">
         {% csrf_token %}
-        <div>
+        <div class="header-buttons">
             <div class="dropdown">
                 <button class="dropbtn">Leagues</button>
                 <div class="dropdown-content">
@@ -51,7 +51,6 @@
                     {% endfor %}
                 </div>
             </div>
-
             <span class="bet-type">
                 {% if bet_type == 'straight' %}
                     <a id="straight-button" class="parlay-straight-toggle button" href="{% url 'load_table' sport_group=sport_group bet_type='straight' league_key=league_key %}">Straight</a>
@@ -60,9 +59,8 @@
                     <a id="straight-button" class="parlay-straight-toggle button2" href="{% url 'load_table' sport_group=sport_group bet_type='straight' league_key=league_key %}">Straight</a>
                     <a id="parlay-button" class="parlay-straight-toggle button" href="{% url 'load_table' sport_group=sport_group bet_type='parlay' league_key=league_key %}">Parlay</a>
                 {% endif %}
-                    <input class="button2" type="submit" value="Checkout">
+                    <input class="button2 checkout" type="submit" value="Checkout">
             </span>
-
 
         </div>
         <table id="match-data">
@@ -144,7 +142,6 @@
                                     </div>
                                 </td>
                             </tr>
-
                         {% else %}
                             <tr>
                                 <td class="header-cell">
@@ -322,6 +319,19 @@
             cursor: pointer;
 
         }
+        
+        .bet-type {
+            width: 50%;
+            height: 100%;
+            justify-content: space-between;
+
+        }
+        
+        .header-button {
+            display: inline-block;
+            width: 100%;
+        }
+
 
     </style>
 

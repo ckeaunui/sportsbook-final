@@ -5,7 +5,47 @@
 
 <div>
     {% csrf_token %}
-    <h1>Customer</h1>
-    {{ customer.name }}
+        {% if user_orders|length == 0 %}
+            <h1 id="profile-header">No Orders</h1>
+
+
+        {% else %}
+            <h1 id="profile-header">Your Orders</h1>
+            <table class="table table-sm profile-orders">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Wager</th>
+                        <th>To Win</th>
+                        <th>Date</th>
+                        <th>Payment Method</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in user_orders %}
+                        <tr>
+                            <td>{{ order.name}}</td>
+                            <td>{{ order.description }}</td>
+                            <td>
+                                {% if order.price > 0 %}
+                                    +{{ order.price }}
+                                {% else %}
+                                    {{ order.price }}
+                                {% endif %}
+                            </td>
+                            <td>{{ order.wager }}</td>
+                            <td>{{ order.to_win }}</td>
+                            <td>{{ order.commence_time }}</td>
+                            <td>{{ order.payment_method }}</td>
+                            <td>{{ order.status }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        {% endif %}
 </div>
 {% endblock %}
