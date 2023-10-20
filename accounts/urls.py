@@ -23,12 +23,10 @@ urlpatterns = [
     path("edit_wager/", views.edit_wager, name="edit_wager"),
     path("checkout/", views.checkout, name="checkout"),
     path("place_order/", views.place_order, name="place_order"),
-    path("prop_clicked/", views.prop_clicked, name="prop_clicked"),
+    path("get_prop_data/", views.get_prop_data, name="get_prop_data"),
     path("place_wager/", views.place_wager, name="place_wager"),
     path("add_to_balance/", views.add_to_balance, name="add_to_balance"),
 
     
-
-
 ]
 

@@ -27,6 +27,126 @@ API_KEY = '93bfd6ad9c04dac5206f2584c80d9125'
 API_BASE_URL = "https://api.the-odds-api.com/"
 SPORTS_URL = f"{API_BASE_URL}v4/sports/?apiKey={API_KEY}"
 
+prop_market_keys = {
+    'NFL': {
+        'player_pass_tds': 'Pass Touchdowns (Over/Under)',
+        'player_pass_yds': 'Pass Yards (Over/Under)',
+        'player_pass_completions': 'Pass Completions (Over/Under)',
+        'player_pass_attempts':	'Pass Attempts (Over/Under)',
+        'player_pass_interceptions': 'Pass Intercepts (Over/Under)',
+        'player_pass_longest_completion': 'Pass Longest Completion (Over/Under)',
+        'player_rush_yds': 'Rush Yards (Over/Under)',
+        'player_rush_attempts': 'Rush Attempts (Over/Under)',
+        'player_rush_longest': 'Longest Rush (Over/Under)',
+        'player_receptions': 'Receptions (Over/Under)',
+        'player_reception_yds':	'Reception Yards (Over/Under)',
+        'player_reception_longest':	'Longest Reception (Over/Under)',
+        'player_kicking_points': 'Kicking Points (Over/Under)',
+        'player_field_goals': 'Field Goals (Over/Under)',
+        'player_tackles_assists': 'Tackles + Assists (Over/Under)',
+        'player_1st_td': '1st Touchdown Scorer (Yes/No)',
+        'player_last_td': 'Last Touchdown Scorer (Yes/No)',
+        'player_anytime_td': 'Anytime Touchdown Scorer (Yes/No)'
+        },
+    'NCAAF': {
+        'player_pass_tds': 'Pass Touchdowns (Over/Under)',
+        'player_pass_yds': 'Pass Yards (Over/Under)',
+        'player_pass_completions': 'Pass Completions (Over/Under)',
+        'player_pass_attempts':	'Pass Attempts (Over/Under)',
+        'player_pass_interceptions': 'Pass Intercepts (Over/Under)',
+        'player_pass_longest_completion': 'Pass Longest Completion (Over/Under)',
+        'player_rush_yds': 'Rush Yards (Over/Under)',
+        'player_rush_attempts': 'Rush Attempts (Over/Under)',
+        'player_rush_longest': 'Longest Rush (Over/Under)',
+        'player_receptions': 'Receptions (Over/Under)',
+        'player_reception_yds':	'Reception Yards (Over/Under)',
+        'player_reception_longest':	'Longest Reception (Over/Under)',
+        'player_kicking_points': 'Kicking Points (Over/Under)',
+        'player_field_goals': 'Field Goals (Over/Under)',
+        'player_tackles_assists': 'Tackles + Assists (Over/Under)',
+        'player_1st_td': '1st Touchdown Scorer (Yes/No)',
+        'player_last_td': 'Last Touchdown Scorer (Yes/No)',
+        'player_anytime_td': 'Anytime Touchdown Scorer (Yes/No)'
+        },
+    'NBA': {
+        'player_points': 'Points (Over/Under)',
+        'player_rebounds': 'Rebounds (Over/Under)',
+        'player_assists': 'Assists (Over/Under)',
+        'player_threes': 'Threes (Over/Under)',
+        'player_double_double': 'Double Double (Yes/No)',
+        'player_blocks': 'Blocks (Over/Under)',
+        'player_steals': 'Steals (Over/Under)',
+        'player_turnovers':	'Turnovers (Over/Under)',
+        'player_points_rebounds_assists': 'Points + Rebounds + Assists (Over/Under)',
+        'player_points_rebounds': 'Points + Rebounds (Over/Under)',
+        'player_points_assists': 'Points + Assists (Over/Under)',
+        'player_rebounds_assists': 'Rebounds + Assists (Over/Under)'
+        },
+    'NCAAB': {
+        'player_points': 'Points (Over/Under)',
+        'player_rebounds': 'Rebounds (Over/Under)',
+        'player_assists': 'Assists (Over/Under)',
+        'player_threes': 'Threes (Over/Under)',
+        'player_double_double': 'Double Double (Yes/No)',
+        'player_blocks': 'Blocks (Over/Under)',
+        'player_steals': 'Steals (Over/Under)',
+        'player_turnovers':	'Turnovers (Over/Under)',
+        'player_points_rebounds_assists': 'Points + Rebounds + Assists (Over/Under)',
+        'player_points_rebounds': 'Points + Rebounds (Over/Under)',
+        'player_points_assists': 'Points + Assists (Over/Under)',
+        'player_rebounds_assists': 'Rebounds + Assists (Over/Under)'
+        },
+    'WNBA': {
+        'player_points': 'Points (Over/Under)',
+        'player_rebounds': 'Rebounds (Over/Under)',
+        'player_assists': 'Assists (Over/Under)',
+        'player_threes': 'Threes (Over/Under)',
+        'player_double_double': 'Double Double (Yes/No)',
+        'player_blocks': 'Blocks (Over/Under)',
+        'player_steals': 'Steals (Over/Under)',
+        'player_turnovers':	'Turnovers (Over/Under)',
+        'player_points_rebounds_assists': 'Points + Rebounds + Assists (Over/Under)',
+        'player_points_rebounds': 'Points + Rebounds (Over/Under)',
+        'player_points_assists': 'Points + Assists (Over/Under)',
+        'player_rebounds_assists': 'Rebounds + Assists (Over/Under)'
+        },
+    'MLB': {
+        'batter_home_runs':	'Batter home runs (Over/Under)',
+        'batter_hits': 'Batter hits (Over/Under)',
+        'batter_total_bases': 'Batter total bases (Over/Under)',
+        'batter_rbis': 'Batter RBIs (Over/Under)',
+        'batter_runs_scored': 'Batter runs scored (Over/Under)',
+        'batter_hits_runs_rbis': 'Batter hits + runs + RBIs (Over/Under)',
+        'batter_singles': 'Batter singles (Over/Under)',
+        'batter_doubles': 'Batter doubles (Over/Under)',
+        'batter_triples': 'Batter triples (Over/Under)',
+        'batter_walks':	'Batter walks (Over/Under)',
+        'batter_strikeouts': 'Batter strikeouts (Over/Under)',
+        'batter_stolen_bases': 'Batter stolen bases (Over/Under)',
+        'pitcher_strikeouts': 'Pitcher strikeouts (Over/Under)',
+        'pitcher_record_a_win':	'Pitcher to record a win (Yes/No)',
+        'pitcher_hits_allowed':	'Pitcher hits allowed (Over/Under)',
+        'pitcher_walks': 'Pitcher walks (Over/Under)',
+        'pitcher_earned_runs': 'Pitcher earned runs (Over/Under)',
+        'pitcher_outs':	'Pitcher outs (Over/Under)'
+        },
+    'NHL': {
+        'player_points': 'Points (Over/Under)',
+        'player_power_play_points':	'Power play points (Over/Under)',
+        'player_assists': 'Assists (Over/Under)',
+        'player_blocked_shots':	'Blocked shots (Over/Under)',
+        'player_shots_on_goal':	'Shots on goal (Over/Under)'
+    },
+    'AFL': {
+        'player_disposals': 'Disposals (Over/Under)',
+        'player_disposals_over': 'Disposals (Over only)',
+        'player_goal_scorer_first': 'First Goal Scorer (Yes/No)',
+        'player_goal_scorer_last': 'Last Goal Scorer (Yes/No)',
+        'player_goal_scorer_anytime': 'Anytime Goal Scorer (Yes/No)',
+        'player_goals_scored_over': 'Goals scored (Over only)'
+    }
+}
+
 
 @admin_only
 def registerPage(request):
@@ -515,11 +635,6 @@ def edit_wager(request):
         return HttpResponse(status=200)
 
 
-def prop_clicked(request):
-    if request.method == 'GET':
-        return HttpResponse(status=200)
-
-
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['customer', 'admin'])
 def place_order(request):
@@ -656,4 +771,19 @@ def add_to_balance(request):
     customer.balance = round(customer.balance, 2)
     customer.save()
     return HttpResponse(status=200)
+    
 
+def get_prop_data(request):
+    if request.method == 'POST':
+        match_id = request.POST.get('match_id', 'None')
+        prop_key = request.POST.get('prop_key', 'None')
+        sport_group = request.POST.get('sport_group', 'None')
+
+        PROP_URL = f"{API_BASE_URL}v4/sports/{sport_group}/events/{match_id}/odds?apiKey={API_KEY}&regions=us&oddsFormat=american&markets={prop_key}"
+        response = requests.get(PROP_URL)
+        prop_data = response.json()
+        prop_data_str = json.dumps(prop_data)
+
+        # get or create products here
+
+        return HttpResponse(prop_data_str)

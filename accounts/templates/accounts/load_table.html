@@ -3,6 +3,126 @@
 {% block content %}
 
     <script>
+        const prop_market_keys = {
+            'NFL': {
+                'player_pass_tds': 'Pass Touchdowns (Over/Under)',
+                'player_pass_yds': 'Pass Yards (Over/Under)',
+                'player_pass_completions': 'Pass Completions (Over/Under)',
+                'player_pass_attempts':	'Pass Attempts (Over/Under)',
+                'player_pass_interceptions': 'Pass Intercepts (Over/Under)',
+                'player_pass_longest_completion': 'Pass Longest Completion (Over/Under)',
+                'player_rush_yds': 'Rush Yards (Over/Under)',
+                'player_rush_attempts': 'Rush Attempts (Over/Under)',
+                'player_rush_longest': 'Longest Rush (Over/Under)',
+                'player_receptions': 'Receptions (Over/Under)',
+                'player_reception_yds':	'Reception Yards (Over/Under)',
+                'player_reception_longest':	'Longest Reception (Over/Under)',
+                'player_kicking_points': 'Kicking Points (Over/Under)',
+                'player_field_goals': 'Field Goals (Over/Under)',
+                'player_tackles_assists': 'Tackles + Assists (Over/Under)',
+                'player_1st_td': '1st Touchdown Scorer (Yes/No)',
+                'player_last_td': 'Last Touchdown Scorer (Yes/No)',
+                'player_anytime_td': 'Anytime Touchdown Scorer (Yes/No)'
+                },
+            'NCAAF': {
+                'player_pass_tds': 'Pass Touchdowns (Over/Under)',
+                'player_pass_yds': 'Pass Yards (Over/Under)',
+                'player_pass_completions': 'Pass Completions (Over/Under)',
+                'player_pass_attempts':	'Pass Attempts (Over/Under)',
+                'player_pass_interceptions': 'Pass Intercepts (Over/Under)',
+                'player_pass_longest_completion': 'Pass Longest Completion (Over/Under)',
+                'player_rush_yds': 'Rush Yards (Over/Under)',
+                'player_rush_attempts': 'Rush Attempts (Over/Under)',
+                'player_rush_longest': 'Longest Rush (Over/Under)',
+                'player_receptions': 'Receptions (Over/Under)',
+                'player_reception_yds':	'Reception Yards (Over/Under)',
+                'player_reception_longest':	'Longest Reception (Over/Under)',
+                'player_kicking_points': 'Kicking Points (Over/Under)',
+                'player_field_goals': 'Field Goals (Over/Under)',
+                'player_tackles_assists': 'Tackles + Assists (Over/Under)',
+                'player_1st_td': '1st Touchdown Scorer (Yes/No)',
+                'player_last_td': 'Last Touchdown Scorer (Yes/No)',
+                'player_anytime_td': 'Anytime Touchdown Scorer (Yes/No)'
+                },
+            'NBA': {
+                'player_points': 'Points (Over/Under)',
+                'player_rebounds': 'Rebounds (Over/Under)',
+                'player_assists': 'Assists (Over/Under)',
+                'player_threes': 'Threes (Over/Under)',
+                'player_double_double': 'Double Double (Yes/No)',
+                'player_blocks': 'Blocks (Over/Under)',
+                'player_steals': 'Steals (Over/Under)',
+                'player_turnovers':	'Turnovers (Over/Under)',
+                'player_points_rebounds_assists': 'Points + Rebounds + Assists (Over/Under)',
+                'player_points_rebounds': 'Points + Rebounds (Over/Under)',
+                'player_points_assists': 'Points + Assists (Over/Under)',
+                'player_rebounds_assists': 'Rebounds + Assists (Over/Under)'
+                },
+            'NCAAB': {
+                'player_points': 'Points (Over/Under)',
+                'player_rebounds': 'Rebounds (Over/Under)',
+                'player_assists': 'Assists (Over/Under)',
+                'player_threes': 'Threes (Over/Under)',
+                'player_double_double': 'Double Double (Yes/No)',
+                'player_blocks': 'Blocks (Over/Under)',
+                'player_steals': 'Steals (Over/Under)',
+                'player_turnovers':	'Turnovers (Over/Under)',
+                'player_points_rebounds_assists': 'Points + Rebounds + Assists (Over/Under)',
+                'player_points_rebounds': 'Points + Rebounds (Over/Under)',
+                'player_points_assists': 'Points + Assists (Over/Under)',
+                'player_rebounds_assists': 'Rebounds + Assists (Over/Under)'
+                },
+            'WNBA': {
+                'player_points': 'Points (Over/Under)',
+                'player_rebounds': 'Rebounds (Over/Under)',
+                'player_assists': 'Assists (Over/Under)',
+                'player_threes': 'Threes (Over/Under)',
+                'player_double_double': 'Double Double (Yes/No)',
+                'player_blocks': 'Blocks (Over/Under)',
+                'player_steals': 'Steals (Over/Under)',
+                'player_turnovers':	'Turnovers (Over/Under)',
+                'player_points_rebounds_assists': 'Points + Rebounds + Assists (Over/Under)',
+                'player_points_rebounds': 'Points + Rebounds (Over/Under)',
+                'player_points_assists': 'Points + Assists (Over/Under)',
+                'player_rebounds_assists': 'Rebounds + Assists (Over/Under)'
+                },
+            'MLB': {
+                'batter_home_runs':	'Batter home runs (Over/Under)',
+                'batter_hits': 'Batter hits (Over/Under)',
+                'batter_total_bases': 'Batter total bases (Over/Under)',
+                'batter_rbis': 'Batter RBIs (Over/Under)',
+                'batter_runs_scored': 'Batter runs scored (Over/Under)',
+                'batter_hits_runs_rbis': 'Batter hits + runs + RBIs (Over/Under)',
+                'batter_singles': 'Batter singles (Over/Under)',
+                'batter_doubles': 'Batter doubles (Over/Under)',
+                'batter_triples': 'Batter triples (Over/Under)',
+                'batter_walks':	'Batter walks (Over/Under)',
+                'batter_strikeouts': 'Batter strikeouts (Over/Under)',
+                'batter_stolen_bases': 'Batter stolen bases (Over/Under)',
+                'pitcher_strikeouts': 'Pitcher strikeouts (Over/Under)',
+                'pitcher_record_a_win':	'Pitcher to record a win (Yes/No)',
+                'pitcher_hits_allowed':	'Pitcher hits allowed (Over/Under)',
+                'pitcher_walks': 'Pitcher walks (Over/Under)',
+                'pitcher_earned_runs': 'Pitcher earned runs (Over/Under)',
+                'pitcher_outs':	'Pitcher outs (Over/Under)'
+                },
+            'NHL': {
+                'player_points': 'Points (Over/Under)',
+                'player_power_play_points':	'Power play points (Over/Under)',
+                'player_assists': 'Assists (Over/Under)',
+                'player_blocked_shots':	'Blocked shots (Over/Under)',
+                'player_shots_on_goal':	'Shots on goal (Over/Under)'
+            },
+            'AFL': {
+                'player_disposals': 'Disposals (Over/Under)',
+                'player_disposals_over': 'Disposals (Over only)',
+                'player_goal_scorer_first': 'First Goal Scorer (Yes/No)',
+                'player_goal_scorer_last': 'Last Goal Scorer (Yes/No)',
+                'player_goal_scorer_anytime': 'Anytime Goal Scorer (Yes/No)',
+                'player_goals_scored_over': 'Goals scored (Over only)'
+            }
+        }
+        
         let links = document.getElementsByClassName('sidenav-link');
         for (let i = 0; i < links.length; i++) {
             links[i].className = 'sidenav-link';
@@ -24,11 +144,111 @@
         var csrf = document.querySelector('meta[name="csrf-token"]').content;
         
         
-        function show_props(match_id) {
-            document.getElementById('prop-popup').hidden = false;
-            let header = document.getElementById("prop-popup-header");
-            header.textContent = "Prop Data Is Currently Unavailable";s
+        function show_props(match_id, match_name) {
+            
+            if ('{{ league_title }}' in prop_market_keys) {
 
+                document.getElementById('prop-popup').hidden = false;
+                let header = document.getElementById("prop-popup-header");
+                header.textContent = match_name;
+                
+                let props_container = document.getElementById('prop-options');
+                props_container.innerHTML = "";
+
+                for (key in prop_market_keys['{{ league_title }}']) {
+                    let prop_btn = document.createElement('button');
+                    prop_btn.setAttribute('type', 'button');
+                    prop_btn.setAttribute('value', key);
+                    prop_btn.onclick = function() { getPropData(match_id, this.value) };
+                    prop_btn.textContent = prop_market_keys['{{ league_title }}'][key];
+
+                    props_container.appendChild(prop_btn);
+                }
+            }
+        }
+
+        function getPropData(match_id, prop_key) {
+            let form_data = {
+                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+                match_id: match_id,
+                prop_key: prop_key,
+                sport_group: '{{ league_key }}',
+            };
+            $.ajax({
+                type : 'POST',
+                url: '/get_prop_data/',
+                data: form_data,
+                success: function(data) {
+                    let obj = JSON.parse(data);
+                    let header = document.getElementById("prop-popup-header");
+                    header.textContent = String(obj.home_team) + " vs. " + String(obj.away_team);
+                    let props_container = document.getElementById('prop-odds-container');
+                    props_container.innerHTML = "";
+                    for (let entry in obj.bookmakers[0].markets[0].outcomes) {
+                        let name = obj.bookmakers[0].markets[0].outcomes[entry].name;
+                        let description = obj.bookmakers[0].markets[0].outcomes[entry].description;
+                        let price = String(obj.bookmakers[0].markets[0].outcomes[entry].price);
+
+                        if (parseInt(price) > 0) {
+                            price = "+" + price;
+                        }
+
+                        let point = " ";
+                        if (name != "Yes" && name != "No") {
+                            point += String(obj.bookmakers[0].markets[0].outcomes[entry].point);
+                            point += " ";
+                        }
+
+                        let prop_odds_label = document.createElement('label');
+                        let prop_odds_input = document.createElement('input');
+
+                        prop_odds_label.innerHTML = "";
+                        prop_odds_label.setAttribute('class', 'prop-price-label');
+                        prop_odds_label.textContent = description + " " + name + point + price;
+
+                        prop_odds_input.innerHTML = "";
+                        prop_odds_input.setAttribute('value', parseInt(price));
+                        prop_odds_input.setAttribute('type', 'checkbox');
+                        prop_odds_input.setAttribute('class', 'prop-price');
+                        prop_odds_input.setAttribute('name', description);
+
+                        prop_odds_label.appendChild(prop_odds_input);
+                        props_container.appendChild(prop_odds_label);
+
+                    }
+                    document.getElementById('prop-odds-header').textContent = prop_market_keys['{{ league_title }}'][prop_key];
+;
+
+                    var checkboxes = document.querySelectorAll(".prop-price");
+                    checkboxes.forEach(el => el.addEventListener('change', event => {
+                        event.preventDefault();
+                        var bet_type = '{{ bet_type }}';
+                        var value = el.value;
+                        console.log("Sent-val: ", value, typeof value);
+
+                        $('input[type="checkbox"]').on('change', function() {
+                            $('input[name="' + this.name + '"]').not(this).prop('checked', false);
+                            $('input[name="' + this.name + '"]').not(this).prop('checked', false);
+
+                        });
+
+                        const form_data = {
+                            csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+                            value: value,
+                            bet_type: bet_type,
+                            name: el.name,
+                        };
+                        $.ajax({
+                            type : 'POST',
+                            url: '/add_to_cart/',
+                            data: form_data,
+                            success: function() {
+                                console.log('updated')
+                            }
+                        });
+                    }));
+                }
+            });
         }
 
         function close_props() {
@@ -37,14 +257,12 @@
 
     </script>
 
-
-
     <h1 id="sport-group">{{ league_title }}</h1>
     <form id="checkout-form" class="table-form" action={% url 'checkout' %} method="POST">
         {% csrf_token %}
         <div class="header-buttons">
             <div class="dropdown">
-                <button class="dropbtn">Leagues</button>
+                <button class="dropbtn" type="button">Leagues</button>
                 <div class="dropdown-content">
                     {% for league in leagues %}  
                         <a id="{{ sport_group }}" href="{% url 'load_table' sport_group=sport_group league_key=league.key bet_type='straight' %}">{{ league.title }}</a>
@@ -152,7 +370,7 @@
                                         {% if has_draw %}
                                             <div class="td-row">Draw</div>
                                         {% endif %}
-                                        <button class="props-btn" type="button" value="{{ match.match_id}}" onclick="show_props(this.value)">Props+</button>
+                                        <button class="props-btn" type="button" value="{{ match.match_id}}" onclick="show_props(this.value, '{{ match.match_name }}')">Props+</button>
                                     </div>
                                 </td>
                                 <td>
@@ -228,9 +446,14 @@
     <div id="prop-popup" hidden>
         <h1 id="prop-popup-header"></h1>
         <hr color="d34262">
-        <table id="prop-options"></table>
+        <div class="prop-subcontainer">
+            <div id="prop-options" class="prop-data-container"></div>
+            <div id="prop-odds" class="prop-data-container">
+                <h3 id="prop-odds-header"></h3>
+                <div id="prop-odds-container"></div>
+            </div>
+        </div>        
         <button onclick="close_props()">Close</button>
-
     </div>
     <script>
         var checkboxes = document.querySelectorAll(".wager");
@@ -238,8 +461,6 @@
             event.preventDefault();
             var bet_type = '{{ bet_type }}';
             var value = el.value;
-            console.log("Sent-val: ", value, typeof value);
-
             $('input[type="checkbox"]').on('change', function() {
                 $('input[name="' + this.name + '"]').not(this).prop('checked', false);
                 $('input[name="' + this.name + '"]').not(this).prop('checked', false);
@@ -261,27 +482,6 @@
                 }
             });
         }));
-
-        /*
-        var checkboxes = document.querySelectorAll(".props-btn");
-        checkboxes.forEach(el => el.addEventListener('click', event => {
-            event.preventDefault();
-            var value = el.value;
-            console.log("Sent-val: ", value, typeof value);
-            const form_data = {
-                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
-                value: value,
-            };
-            $.ajax({
-                type : 'POST',
-                url: '/prop_clicked/',
-                data: form_data,
-                success: function() {
-                    console.log('clicked')
-                }
-            });
-        }));*/
-
     </script>
     <style>
         input[type="checkbox"]:not(:checked), 
@@ -326,14 +526,45 @@
             justify-content: space-between;
 
         }
-        
+
         .header-button {
             display: inline-block;
             width: 100%;
         }
 
+        #prop-options {
+            padding-top: 30px;
+        }
+
+        #prop-options button {
+            display: block;
+            width: 100%;
+        }
+
+        .prop-data-container {
+            width: 50%;
+
+        }
+
+        .prop-subcontainer {
+            display: flex;
+        }
+
+        #prop-odds {
+            display: block;
+
+        }
+
+        .prop-price-label {
+            display: block;
+        }
+
+        #prop-odds-header {
+            text-align: center;
+        }
+
+
 
     </style>
 
-<!-- UNDO UNTIL HERE -->
 {% endblock %}
