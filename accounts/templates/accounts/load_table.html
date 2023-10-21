@@ -179,15 +179,20 @@
                 url: '/get_prop_data/',
                 data: form_data,
                 success: function(data) {
+
                     let obj = JSON.parse(data);
+                    console.log(obj);
+
                     let header = document.getElementById("prop-popup-header");
                     header.textContent = String(obj.home_team) + " vs. " + String(obj.away_team);
                     let props_container = document.getElementById('prop-odds-container');
                     props_container.innerHTML = "";
-                    for (let entry in obj.bookmakers[0].markets[0].outcomes) {
-                        let name = obj.bookmakers[0].markets[0].outcomes[entry].name;
-                        let description = obj.bookmakers[0].markets[0].outcomes[entry].description;
-                        let price = String(obj.bookmakers[0].markets[0].outcomes[entry].price);
+
+                    for (let entry in obj) {
+
+                        let name = obj[entry].name;
+                        let description = obj[entry].description;
+                        let price = String(obj[entry].price);
 
                         if (parseInt(price) > 0) {
                             price = "+" + price;
@@ -195,7 +200,7 @@
 
                         let point = " ";
                         if (name != "Yes" && name != "No") {
-                            point += String(obj.bookmakers[0].markets[0].outcomes[entry].point);
+                            point += String(obj[entry].point);
                             point += " ";
                         }
 
@@ -207,7 +212,7 @@
                         prop_odds_label.textContent = description + " " + name + point + price;
 
                         prop_odds_input.innerHTML = "";
-                        prop_odds_input.setAttribute('value', parseInt(price));
+                        prop_odds_input.setAttribute('value', obj[entry].id);
                         prop_odds_input.setAttribute('type', 'checkbox');
                         prop_odds_input.setAttribute('class', 'prop-price');
                         prop_odds_input.setAttribute('name', description);
@@ -482,6 +487,8 @@
                 }
             });
         }));
+
+
     </script>
     <style>
         input[type="checkbox"]:not(:checked), 

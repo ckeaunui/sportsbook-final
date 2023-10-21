@@ -606,6 +606,10 @@ def add_to_cart(request):
                             if i.product.match == product.match and i.product.key == 'totals' and product.key == 'totals':
                                 print('p2')
                                 i.delete()
+                        else:
+                            # Prop sent
+                            print("product adding to cart", product)
+
             else:
                 cart_item.delete()
         return HttpResponse(status=200)
@@ -784,6 +788,57 @@ def get_prop_data(request):
         prop_data = response.json()
         prop_data_str = json.dumps(prop_data)
 
+        print(json.dumps(prop_data, indent=3)
+              
+        # if prop exists:
+)
         # get or create products here
 
-        return HttpResponse(prop_data_str)
+        match = Match.objects.get(match_id=match_id)
+        prop_data_str = []
+
+        if len(prop_data['bookmakers'][0]['markets'][0]['outcomes']) > 0:
+
+            for outcome in prop_data['bookmakers'][0]['markets'][0]['outcomes']:
+                print(outcome, type(outcome))
+
+                row_data = {}
+
+                winner = outcome['name']
+                description = outcome['description']
+                price = outcome['price']
+                point = 0
+                if 'point' in outcome.keys():
+                    point = outcome['point']
+
+                # set max wager
+                max_wager = 5000
+
+                product, _ = Product.objects.update_or_create(
+                    match = match,
+                    key = prop_key,
+                    winner = winner,
+                    description = description,
+                    defaults = {
+                        'price': price,
+                        'max_wager': max_wager,
+                        'point': point,       
+                })
+
+                row_data['winner'] = winner
+                row_data['description'] = description
+                row_data['price'] = price
+                row_data['point'] = point
+                row_data['id'] = product.id
+                prop_data_str.append(row_data)
+            prop_data_str = json.dumps(prop_data_str)
+            
+            print('sending', prop_data_str)
+            return HttpResponse(prop_data_str)
+
+        else:
+            return HttpResponse("No Data Available")
+
+
+
+

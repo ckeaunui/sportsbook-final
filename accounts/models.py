@@ -40,14 +40,8 @@ class Match(models.Model):
 
 
 class Product(models.Model):
-    KEYS = (
-        ('h2h', 'h2h'),
-        ('spreads', 'spreads'),
-        ('totals', 'totals')
-    )
-
     match = models.ForeignKey(Match, null=True, related_name="children", on_delete=models.CASCADE)
-    key = models.CharField(max_length=100, null=True, choices=KEYS)
+    key = models.CharField(max_length=500, null=True)
     winner = models.CharField(max_length=200, null=True)
     description = models.CharField(max_length=100, null=True)  
     display_data = models.CharField(max_length=100, null=True)  

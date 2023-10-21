@@ -123,13 +123,13 @@
                     }
                 }
             }
-            payout = Math.round((payout + Number.EPSILON) * 100) / 100
+            payout = Math.round((payout + Number.EPSILON) * 100) / 100;
 
             let totals = document.getElementsByClassName('wager');
             let total = 0.0;
             for (let i = 0; i < totals.length; i++) {
                 if (totals[i].value != '') {
-                    total += parseFloat(totals[i].value)
+                    total += parseFloat(totals[i].value);
                 }
             }
             total = Math.round((total + Number.EPSILON) * 100) / 100
