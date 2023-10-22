@@ -34,6 +34,7 @@ class Match(models.Model):
     team1 = models.CharField(max_length=200, null=True)
     team2 = models.CharField(max_length=200, null=True)
     commence_time = models.CharField(max_length=50, null=True)
+    commence_time_unix = models.IntegerField(null=True)
 
     def __str__(self):
 	    return self.match_name or 'name'
