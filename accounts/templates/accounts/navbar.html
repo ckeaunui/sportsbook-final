@@ -38,7 +38,7 @@
     .nav-val-label p {
         margin: 0px;
         padding-top: 5px;
-        margin-right: 15px;
+        text-align: left;
 
     }
 
@@ -102,11 +102,11 @@
     let balance = document.getElementById('balance');
 
     if ("{{ request.user.customer.balance }}" > 0) {
-        balance.className = 'positive';
+        balance.className = 'money-display positive';
     } else if ("{{ request.user.customer.balance }}" < 0) {
-        balance.className = 'negative';
+        balance.className = 'money-display negative';
     } else {
-        balance.className = '';
+        balance.className = 'money-display ';
     }
 
 </script>
