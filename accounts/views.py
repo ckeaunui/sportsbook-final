@@ -703,7 +703,12 @@ def place_order(request):
         odds = 1
         description = ""
 
+        
+
         for cart_item in parlay_items:
+
+            print(cart_item)
+
             product = cart_item.product
             to_win = 0
             order_item, _ = OrderItem.objects.get_or_create(product=product, price=product.price)
@@ -712,7 +717,8 @@ def place_order(request):
                 odds *= order_item.price / 100
             else:
                 odds *= 1 + -100 / order_item.price
-            description += order_item.product.match.match_name  + ': ' + order_item.product.description + '\n---\n'
+
+            description += order_item.product.match.match_name  + ': ' + order_item.product.description + '\n'
             order.products.add(order_item)
             cart_item.delete()
         
