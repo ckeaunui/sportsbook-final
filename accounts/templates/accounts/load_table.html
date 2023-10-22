@@ -151,7 +151,7 @@
                 document.getElementById('prop-popup').hidden = false;
                 let header = document.getElementById("prop-popup-header");
                 header.textContent = match_name;
-                
+
                 let props_container = document.getElementById('prop-options');
                 props_container.innerHTML = "";
 
@@ -161,7 +161,6 @@
                     prop_btn.setAttribute('value', key);
                     prop_btn.onclick = function() { getPropData(match_id, this.value) };
                     prop_btn.textContent = prop_market_keys['{{ league_title }}'][key];
-
                     props_container.appendChild(prop_btn);
                 }
             }
@@ -179,79 +178,98 @@
                 url: '/get_prop_data/',
                 data: form_data,
                 success: function(data) {
-
-                    let obj = JSON.parse(data);
-                    console.log(obj);
-
-                    let header = document.getElementById("prop-popup-header");
-                    header.textContent = String(obj.home_team) + " vs. " + String(obj.away_team);
-                    let props_container = document.getElementById('prop-odds-container');
-                    props_container.innerHTML = "";
-
-                    for (let entry in obj) {
-
-                        let name = obj[entry].name;
-                        let description = obj[entry].description;
-                        let price = String(obj[entry].price);
-
-                        if (parseInt(price) > 0) {
-                            price = "+" + price;
-                        }
-
-                        let point = " ";
-                        if (name != "Yes" && name != "No") {
-                            point += String(obj[entry].point);
-                            point += " ";
-                        }
-
-                        let prop_odds_label = document.createElement('label');
-                        let prop_odds_input = document.createElement('input');
-
-                        prop_odds_label.innerHTML = "";
-                        prop_odds_label.setAttribute('class', 'prop-price-label');
-                        prop_odds_label.textContent = description + " " + name + point + price;
-
-                        prop_odds_input.innerHTML = "";
-                        prop_odds_input.setAttribute('value', obj[entry].id);
-                        prop_odds_input.setAttribute('type', 'checkbox');
-                        prop_odds_input.setAttribute('class', 'prop-price');
-                        prop_odds_input.setAttribute('name', description);
-
-                        prop_odds_label.appendChild(prop_odds_input);
-                        props_container.appendChild(prop_odds_label);
-
-                    }
                     document.getElementById('prop-odds-header').textContent = prop_market_keys['{{ league_title }}'][prop_key];
-;
+                    let props_container = document.getElementById('prop-odds-container');
+                        props_container.innerHTML = "";
 
-                    var checkboxes = document.querySelectorAll(".prop-price");
-                    checkboxes.forEach(el => el.addEventListener('change', event => {
-                        event.preventDefault();
-                        var bet_type = '{{ bet_type }}';
-                        var value = el.value;
-                        console.log("Sent-val: ", value, typeof value);
+                    if (data == "No Data Available") {
+                        props_container.textContent = data;
 
-                        $('input[type="checkbox"]').on('change', function() {
-                            $('input[name="' + this.name + '"]').not(this).prop('checked', false);
-                            $('input[name="' + this.name + '"]').not(this).prop('checked', false);
+                    } else {
+                        let obj = JSON.parse(data);
+                        for (player in obj) {
+                            let player_row = document.createElement('div');
+                            let player_name = document.createElement('div');
+                            player_name.textContent = player;
+                            player_row.appendChild(player_name);
 
-                        });
+                            for (i in obj[player]) {
 
-                        const form_data = {
-                            csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
-                            value: value,
-                            bet_type: bet_type,
-                            name: el.name,
-                        };
-                        $.ajax({
-                            type : 'POST',
-                            url: '/add_to_cart/',
-                            data: form_data,
-                            success: function() {
-                                console.log('updated')
+                                let name = obj[player][i]['winner'];
+                                let price = String(obj[player][i]['price']);
+
+                                if (parseInt(price) > 0) {
+                                    price = "+" + price;
+                                }
+
+                                let point = " ";
+
+                                if (name != "Yes" && name != "No") {
+                                    point += String(obj[player][i]['point']);
+                                    point += " ";
+                                }
+
+                                let prop_odds_label = document.createElement('label');
+                                let prop_odds_input = document.createElement('input');
+                                prop_odds_label.innerHTML = "";
+                                prop_odds_label.setAttribute('class', 'prop-price-label');
+
+                                if (name == 'Over') {
+                                    prop_odds_label.textContent = name + " " + point + price;
+
+                                } else {
+                                    prop_odds_label.textContent = name + point + price;
+                                }
+
+                                prop_odds_input.innerHTML = "";
+                                prop_odds_input.setAttribute('value', parseInt(obj[player][i]['id']));
+                                prop_odds_input.setAttribute('type', 'checkbox');
+                                prop_odds_input.setAttribute('class', 'prop-price');
+                                prop_odds_input.setAttribute('name', player + prop_key);  // Change name to match other input
+                                let in_cart = "{{ in_cart }}";
+                                let ids = in_cart.replaceAll("{", "").replaceAll("}", "").replaceAll(": None", "").replaceAll(" ", "").split(",");
+
+                                for (let j = 0; j < ids.length; j++) {
+                                    if (ids[j] == parseInt(obj[player][i]['id'])) {
+                                        prop_odds_input.checked = 'checked';
+                                    }
+
+                                }
+                                prop_odds_label.appendChild(prop_odds_input);
+                                player_row.appendChild(prop_odds_label);
                             }
-                        });
-                    }));
+                            props_container.appendChild(player_row);
+                        }
+
+                        var checkboxes = document.querySelectorAll(".prop-price");
+                        checkboxes.forEach(el => el.addEventListener('change', event => {
+                            event.preventDefault();
+                            var bet_type = '{{ bet_type }}';
+                            var value = el.value;
+                            console.log("Sent-val: ", value, typeof value);
+
+                            $('input[type="checkbox"]').on('change', function() {
+                                $('input[name="' + this.name + '"]').not(this).prop('checked', false);
+                                $('input[name="' + this.name + '"]').not(this).prop('checked', false);
+
+                            });
+
+                            const form_data = {
+                                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+                                value: value,
+                                bet_type: bet_type,
+                                name: el.name,
+                            };
+                            $.ajax({
+                                type : 'POST',
+                                url: '/add_to_cart/',
+                                data: form_data,
+                                success: function() {
+                                    console.log('updated')
+                                }
+                            });
+                        }));
+                    }
                 }
             });
         }
@@ -375,7 +393,11 @@
                                         {% if has_draw %}
                                             <div class="td-row">Draw</div>
                                         {% endif %}
-                                        <button class="props-btn" type="button" value="{{ match.match_id}}" onclick="show_props(this.value, '{{ match.match_name }}')">Props+</button>
+                                        {% if league_title in prop_market_keys %}
+                                            <button class="props-btn" type="button" value="{{ match.match_id}}" onclick="show_props(this.value, '{{ match.match_name }}')">Props+</button>
+                                        {% else %}
+                                            <div class="td-row"></div>
+                                        {% endif %}
                                     </div>
                                 </td>
                                 <td>
@@ -458,7 +480,7 @@
                 <div id="prop-odds-container"></div>
             </div>
         </div>        
-        <button onclick="close_props()">Close</button>
+        <button id="close-prop-btn" type="button" class="button2" onclick="close_props()">Close</button>
     </div>
     <script>
         var checkboxes = document.querySelectorAll(".wager");
@@ -541,6 +563,8 @@
 
         #prop-options {
             padding-top: 30px;
+            margin-right: 15px;
+
         }
 
         #prop-options button {
@@ -564,11 +588,34 @@
 
         .prop-price-label {
             display: block;
+            white-space: pre;
         }
 
         #prop-odds-header {
             text-align: center;
         }
+
+        #prop-odds-container div {
+            margin-top: 10px;
+        }
+
+        #prop-odds-container div div {
+            background-color: #d34262;
+            padding: 2px;
+            border-radius: 2px;
+            padding-left: 5px;
+
+        }
+
+        #prop-odds-container div label {
+            padding-left: 5px;
+
+        }
+
+        #close-prop-btn {
+            margin-top: 15px;
+        }
+
 
 
 

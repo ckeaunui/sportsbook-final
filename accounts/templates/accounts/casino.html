@@ -2,6 +2,15 @@
 
 {% block content %}
 
+    <script>
+        let links = document.getElementsByClassName('sidenav-link');
+        for (let i = 0; i < links.length; i++) {
+            links[i].className = 'sidenav-link';
+        }
+        let active_link = document.getElementById("casino");
+        active_link.className += " active";
+    </script>
+
     <a class="casino-game" href="{% url 'roulette' %}">Roulette</a>
     <a class="casino-game" href="{% url 'blackjack' %}">Blackjack</a>
 

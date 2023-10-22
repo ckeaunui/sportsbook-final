@@ -3,9 +3,6 @@
 {% block content %}
 {% csrf_token %}
 <div>
-
-
-
 	<script>
 		let bankValue = Math.round(((parseFloat("{{ customer.balance }}") + parseFloat("{{ customer.credit }}"))+ Number.EPSILON) * 100) / 100;
 		let currentBet = 0;

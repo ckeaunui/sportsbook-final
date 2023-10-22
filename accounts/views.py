@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 from django.http import HttpResponseRedirect
 from django.views.generic import View
 import operator
+import time
 
 import json
 
@@ -381,6 +382,10 @@ def load_table(request, sport_group, league_key, bet_type):
 
             match_id = match['id']
             sport_title = sport['title']
+            commence_time_unix = int(match['commence_time'])
+            print(commence_time_unix, type(commence_time_unix))
+            print(time.time())
+
             commence_time = datetime.utcfromtimestamp(int(match['commence_time'])) - timedelta(hours=7, minutes=0) 
             commence_time = commence_time.strftime('%b. %d - %-I:%M %p') 
             match['commence_time'] = commence_time
@@ -403,7 +408,8 @@ def load_table(request, sport_group, league_key, bet_type):
                     'match_name': match_name,
                     'team1': team1,
                     'team2': team2,
-                    'commence_time': commence_time
+                    'commence_time': commence_time,
+                    'commence_time_unix': commence_time_unix,
                 }
             )
 
@@ -469,15 +475,15 @@ def load_table(request, sport_group, league_key, bet_type):
                             'description': description,
                             'max_wager': max_wager,
                             'point': point,
-                                           
                     })
 
     leagues = sorted(leagues, key=operator.itemgetter('title'))
     # Gather data to send to view
-    matches = Match.objects.filter(league=league_key)
+    matches = Match.objects.filter(league=league_key).filter(commence_time_unix__gte=time.time())
+
     match_ids = matches.values_list('match_id', flat=True).distinct()
     context = {'matches': matches, 'leagues': leagues, 'match_ids': match_ids, 'sport_title': sport_title, 'sport_group': sport_group, 
-               'bet_type': bet_type, 'has_draw': has_draw, 'league_key': league_key, 'league_title': league_title, 'in_cart': in_cart}
+               'bet_type': bet_type, 'has_draw': has_draw, 'league_key': league_key, 'league_title': league_title, 'in_cart': in_cart, 'prop_market_keys': prop_market_keys.keys()}
     return render(request, 'accounts/load_table.html', context)
 
 
@@ -545,7 +551,6 @@ def checkout(request):
         parlay_max_wager = 100
         if parlay_odds != 0:
             parlay_max_wager = round(5000 * 100 / parlay_odds) / 100
-
         context = {'straight_data': straight_data, 'parlay_data': parlay_data, 'parlay_price': parlay_price, 'parlay_max_wager': parlay_max_wager, 'customer': customer}
         return render(request, 'accounts/checkout.html', context)
     return render(request, 'accounts/profile.html', context)
@@ -596,19 +601,20 @@ def add_to_cart(request):
                             continue
 
                         if (cart_item.product.key == 'h2h' or cart_item.product.key == 'spreads'):
-                            print('check1')
                             if i.product.match == product.match and (i.product.key == 'h2h' or i.product.key == 'spreads') and (product.key == 'h2h' or product.key == 'spreads'):
-                                print('p1')
                                 i.delete()
 
                         elif cart_item.product.key == 'totals':
-                            print('check2')
                             if i.product.match == product.match and i.product.key == 'totals' and product.key == 'totals':
-                                print('p2')
                                 i.delete()
                         else:
+                            if i.product.match == product.match and i.product.key == product.key and i.product.description == product.description:
+                                print(i.product.id)
+                                i.delete()
+
                             # Prop sent
-                            print("product adding to cart", product)
+                            print("prop adding to cart. Prod:", product)
+                            
 
             else:
                 cart_item.delete()
@@ -777,64 +783,57 @@ def add_to_balance(request):
     return HttpResponse(status=200)
     
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['customer', 'admin'])
 def get_prop_data(request):
     if request.method == 'POST':
         match_id = request.POST.get('match_id', 'None')
         prop_key = request.POST.get('prop_key', 'None')
         sport_group = request.POST.get('sport_group', 'None')
-
         PROP_URL = f"{API_BASE_URL}v4/sports/{sport_group}/events/{match_id}/odds?apiKey={API_KEY}&regions=us&oddsFormat=american&markets={prop_key}"
         response = requests.get(PROP_URL)
         prop_data = response.json()
         prop_data_str = json.dumps(prop_data)
 
-        print(json.dumps(prop_data, indent=3)
-              
-        # if prop exists:
-)
-        # get or create products here
+        if 'message' not in prop_data.keys():        
+            match = Match.objects.get(match_id=match_id)
+            prop_data_str = {}
 
-        match = Match.objects.get(match_id=match_id)
-        prop_data_str = []
+            if len(prop_data['bookmakers']) > 0:
+                for outcome in prop_data['bookmakers'][0]['markets'][0]['outcomes']:
 
-        if len(prop_data['bookmakers'][0]['markets'][0]['outcomes']) > 0:
+                    winner = outcome['name']
+                    description = outcome['description']
+                    price = outcome['price']
+                    point = 0
+                    if 'point' in outcome.keys():
+                        point = outcome['point']
 
-            for outcome in prop_data['bookmakers'][0]['markets'][0]['outcomes']:
-                print(outcome, type(outcome))
+                    product, _ = Product.objects.update_or_create(
+                        match = match,
+                        key = prop_key,
+                        winner = winner,
+                        description = description,
+                        defaults = {
+                            'price': price,
+                            'point': point,       
+                    })
 
-                row_data = {}
+                    row_data = {}
+                    row_data['winner'] = winner
+                    row_data['price'] = price
+                    row_data['point'] = point
+                    row_data['id'] = product.id
 
-                winner = outcome['name']
-                description = outcome['description']
-                price = outcome['price']
-                point = 0
-                if 'point' in outcome.keys():
-                    point = outcome['point']
+                    if description in prop_data_str:
+                        prop_data_str[description].append(row_data)
 
-                # set max wager
-                max_wager = 5000
-
-                product, _ = Product.objects.update_or_create(
-                    match = match,
-                    key = prop_key,
-                    winner = winner,
-                    description = description,
-                    defaults = {
-                        'price': price,
-                        'max_wager': max_wager,
-                        'point': point,       
-                })
-
-                row_data['winner'] = winner
-                row_data['description'] = description
-                row_data['price'] = price
-                row_data['point'] = point
-                row_data['id'] = product.id
-                prop_data_str.append(row_data)
-            prop_data_str = json.dumps(prop_data_str)
-            
-            print('sending', prop_data_str)
-            return HttpResponse(prop_data_str)
+                    else:
+                        prop_data_str[description] = [row_data]
+                prop_data_str = json.dumps(prop_data_str)
+                return HttpResponse(prop_data_str)
+            else:
+                return HttpResponse("No Data Available")
 
         else:
             return HttpResponse("No Data Available")
