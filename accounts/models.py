@@ -98,6 +98,9 @@ class Order(models.Model):
     status = models.CharField(max_length=50, default='Pending', null=True, choices=STATUSES)
     products = models.ManyToManyField(OrderItem, blank=True, related_name='products')
     date_ordered = models.DateTimeField(auto_now=True)
+    payout_date_utx = models.IntegerField(null=True)
+    payout_date = models.CharField(max_length=200, null=True)
+
     payment_method = models.CharField(max_length=100, default='Credit', choices=PAYMENT_METHODS)
 
     def __str__(self):

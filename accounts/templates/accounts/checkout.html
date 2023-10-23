@@ -212,7 +212,7 @@
                     {% for wager in straight_data %}
                         <tr id="a:{{ forloop.counter }}">
                             <td class="checkout-td">{{ wager.game }}</td>
-                            <td class="checkout-td">{{ wager.outcome }} {{ wager.description_suffix}}</td>
+                            <td class="checkout-td">{{ wager.outcome }}</td>
                             <td class="small-col">
                                 {% if wager.price > 0 %}
                                     +{{ wager.price }}
@@ -253,7 +253,7 @@
                         {% for wager in parlay_data %}
                             <tr class="parlay-row" id="b:{{ forloop.counter }}">
                                 <td class="checkout-td parlay-row-col1">{{ wager.game }}</td>
-                                <td class="checkout-td">{{ wager.outcome }} {{ wager.description_suffix}}</td>
+                                <td class="checkout-td">{{ wager.outcome }}</td>
                                 <td class="small-col parlay-price-col">
                                     {% if wager.price > 0 %}
                                         +{{ wager.price }}
@@ -425,13 +425,7 @@
         .parlay-row td button {
             font-size: 0.6em;
         }
-
-        #parlay-label {
-            padding-top: 20px;
-            padding-bottom: 20px;
-
-        }
-
+        
         .parlay-row-col1 {
             padding-left: 30px;
         }

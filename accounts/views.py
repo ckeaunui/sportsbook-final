@@ -148,6 +148,118 @@ prop_market_keys = {
     }
 }
 
+prop_market_key_options = {
+    'player_pass_tds': 'Pass Touchdowns',
+    'player_pass_yds': 'Pass Yards',
+    'player_pass_completions': 'Pass Completions',
+    'player_pass_attempts':	'Pass Attempts',
+    'player_pass_interceptions': 'Pass Intercepts',
+    'player_pass_longest_completion': 'Pass Longest Completion',
+    'player_rush_yds': 'Rush Yards',
+    'player_rush_attempts': 'Rush Attempts',
+    'player_rush_longest': 'Longest Rush',
+    'player_receptions': 'Receptions',
+    'player_reception_yds':	'Reception Yards',
+    'player_reception_longest':	'Longest Reception',
+    'player_kicking_points': 'Kicking Points',
+    'player_field_goals': 'Field Goals',
+    'player_tackles_assists': 'Tackles + Assists',
+    'player_1st_td': '1st Touchdown Scorer',
+    'player_last_td': 'Last Touchdown Scorer',
+    'player_anytime_td': 'Anytime Touchdown Scorer',
+
+    'player_pass_tds': 'Pass Touchdowns',
+    'player_pass_yds': 'Pass Yards',
+    'player_pass_completions': 'Pass Completions',
+    'player_pass_attempts':	'Pass Attempts',
+    'player_pass_interceptions': 'Pass Intercepts',
+    'player_pass_longest_completion': 'Pass Longest Completion',
+    'player_rush_yds': 'Rush Yards',
+    'player_rush_attempts': 'Rush Attempts',
+    'player_rush_longest': 'Longest Rush',
+    'player_receptions': 'Receptions',
+    'player_reception_yds':	'Reception Yards',
+    'player_reception_longest':	'Longest Reception',
+    'player_kicking_points': 'Kicking Points',
+    'player_field_goals': 'Field Goals',
+    'player_tackles_assists': 'Tackles + Assists',
+    'player_1st_td': '1st Touchdown Scorer',
+    'player_last_td': 'Last Touchdown Scorer',
+    'player_anytime_td': 'Anytime Touchdown Scorer',
+
+    'player_points': 'Points',
+    'player_rebounds': 'Rebounds',
+    'player_assists': 'Assists',
+    'player_threes': 'Threes',
+    'player_double_double': 'Double Double',
+    'player_blocks': 'Blocks',
+    'player_steals': 'Steals',
+    'player_turnovers':	'Turnovers',
+    'player_points_rebounds_assists': 'Points + Rebounds + Assists',
+    'player_points_rebounds': 'Points + Rebounds',
+    'player_points_assists': 'Points + Assists',
+    'player_rebounds_assists': 'Rebounds + Assists',
+
+    'player_points': 'Points',
+    'player_rebounds': 'Rebounds',
+    'player_assists': 'Assists',
+    'player_threes': 'Threes',
+    'player_double_double': 'Double Double',
+    'player_blocks': 'Blocks',
+    'player_steals': 'Steals',
+    'player_turnovers':	'Turnovers',
+    'player_points_rebounds_assists': 'Points + Rebounds + Assists',
+    'player_points_rebounds': 'Points + Rebounds',
+    'player_points_assists': 'Points + Assists',
+    'player_rebounds_assists': 'Rebounds + Assists',
+
+    'player_points': 'Points',
+    'player_rebounds': 'Rebounds',
+    'player_assists': 'Assists',
+    'player_threes': 'Threes',
+    'player_double_double': 'Double Double',
+    'player_blocks': 'Blocks',
+    'player_steals': 'Steals',
+    'player_turnovers':	'Turnovers',
+    'player_points_rebounds_assists': 'Points + Rebounds + Assists',
+    'player_points_rebounds': 'Points + Rebounds',
+    'player_points_assists': 'Points + Assists',
+    'player_rebounds_assists': 'Rebounds + Assists',
+
+    'batter_home_runs':	'Batter home runs',
+    'batter_hits': 'Batter hits',
+    'batter_total_bases': 'Batter total bases',
+    'batter_rbis': 'Batter RBIs',
+    'batter_runs_scored': 'Batter runs scored',
+    'batter_hits_runs_rbis': 'Batter hits + runs + RBIs',
+    'batter_singles': 'Batter singles',
+    'batter_doubles': 'Batter doubles',
+    'batter_triples': 'Batter triples',
+    'batter_walks':	'Batter walks',
+    'batter_strikeouts': 'Batter strikeouts',
+    'batter_stolen_bases': 'Batter stolen bases',
+    'pitcher_strikeouts': 'Pitcher strikeouts',
+    'pitcher_record_a_win':	'Pitcher to record a win',
+    'pitcher_hits_allowed':	'Pitcher hits allowed',
+    'pitcher_walks': 'Pitcher walks',
+    'pitcher_earned_runs': 'Pitcher earned runs',
+    'pitcher_outs':	'Pitcher outs',
+
+    'player_points': 'Points',
+    'player_power_play_points':	'Power play points',
+    'player_assists': 'Assists',
+    'player_blocked_shots':	'Blocked shots',
+    'player_shots_on_goal':	'Shots on goal',
+
+    'player_disposals': 'Disposals',
+    'player_disposals_over': 'Disposals',
+    'player_goal_scorer_first': 'First Goal Scorer',
+    'player_goal_scorer_last': 'Last Goal Scorer',
+    'player_goal_scorer_anytime': 'Anytime Goal Scorer',
+    'player_goals_scored_over': 'Goals scored',
+    
+}
+
 
 @admin_only
 def registerPage(request):
@@ -351,6 +463,7 @@ def edit_order(request, pk):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['customer', 'admin'])
 def load_table(request, sport_group, league_key, bet_type):
+    # CartItem.objects.all().delete()
     # Fetch this leagues game data and save all bets as products
     leagues = []
     sport_title = None
@@ -383,9 +496,6 @@ def load_table(request, sport_group, league_key, bet_type):
             match_id = match['id']
             sport_title = sport['title']
             commence_time_unix = int(match['commence_time'])
-            print(commence_time_unix, type(commence_time_unix))
-            print(time.time())
-
             commence_time = datetime.utcfromtimestamp(int(match['commence_time'])) - timedelta(hours=7, minutes=0) 
             commence_time = commence_time.strftime('%b. %d - %-I:%M %p') 
             match['commence_time'] = commence_time
@@ -442,7 +552,7 @@ def load_table(request, sport_group, league_key, bet_type):
                             
                     elif key == 'h2h':
                         if winner != 'Draw':
-                            description += "Outright "
+                            description += "Win Outright "
                         if price >= 0:
                             display_data += '+'
                         display_data += str(price)
@@ -454,7 +564,7 @@ def load_table(request, sport_group, league_key, bet_type):
                         else:
                             ou = {'Over': 'O', 'Under': 'U'}
                             display_data = f"{ou[winner]} {point} "
-                            description += str(point) + ' '
+                            description = 'Total ' + description + str(point) + ' '
 
                             if price > 0:
                                 display_data +=  '+' 
@@ -490,7 +600,6 @@ def load_table(request, sport_group, league_key, bet_type):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['customer', 'admin'])
 def checkout(request):
-    # OrderItem.objects.all().delete()
     context = {}
     if request.method == 'POST':
         customer = request.user.customer
@@ -505,46 +614,36 @@ def checkout(request):
         for item in straight_items:
             date = item.product.match.commence_time
             game = item.product.match.match_name
-            outcome = item.product.winner
+            outcome = item.product.description
             price = item.product.price
             wager = item.wager
             cart_item_id = item.id
             max_wager = 0
-            description_suffix = item.product.point
-            if item.product.key == 'h2h':
-                if item.product.winner != 'Draw':
-                    description_suffix = 'Wins Outright'
-            else:
-                description_suffix = item.product.point
-
-            
+        
             if price > 0:
                 max_wager = round(5000 * 100 / price, 2)
             else:
                 max_wager = round(5000 * price / -100, 2)
-            row_data = {'date': date, 'game': game, 'outcome': outcome, 'price': price, 'wager': wager, 'cart_item_id': cart_item_id, 'max_wager': max_wager, 'description_suffix': description_suffix}
+            row_data = {'date': date, 'game': game, 'outcome': outcome, 'price': price, 'wager': wager, 'cart_item_id': cart_item_id, 'max_wager': max_wager}
             straight_data.append(row_data)
 
         parlay_odds = 1
         for item in parlay_items:
             date = item.product.match.commence_time
             game = item.product.match.match_name
-            outcome = item.product.winner
+            outcome = item.product.description
             price = item.product.price
             cart_item_id = item.id
-            description_suffix = ""
-            if item.product.key == 'h2h':
-                if item.product.winner != 'Draw':
-                    description_suffix = 'Wins Outright'
-            else:
-                description_suffix = item.product.point
+
+            if item.product.key not in ['spreads', 'h2h', 'totals']:
+                print('props turn: ', item.product.description)
 
             if price > 0:
                 parlay_odds *= 1 + price / 100
             else:
                 parlay_odds *= 1 + -100 / price
             
-            row_data = {'date': date, 'game': game, 'outcome': outcome, 'price': price, 'cart_item_id': cart_item_id, 'description_suffix': description_suffix}
+            row_data = {'date': date, 'game': game, 'outcome': outcome, 'price': price, 'cart_item_id': cart_item_id}
             parlay_data.append(row_data)
         parlay_odds -= 1
         parlay_price = round(parlay_odds * 100)
@@ -600,6 +699,8 @@ def add_to_cart(request):
                         if i == cart_item:
                             continue
 
+                        print("i:", i.product.key, i.product.match, i.product.description.split(":")[0])
+
                         if (cart_item.product.key == 'h2h' or cart_item.product.key == 'spreads'):
                             if i.product.match == product.match and (i.product.key == 'h2h' or i.product.key == 'spreads') and (product.key == 'h2h' or product.key == 'spreads'):
                                 i.delete()
@@ -608,7 +709,7 @@ def add_to_cart(request):
                             if i.product.match == product.match and i.product.key == 'totals' and product.key == 'totals':
                                 i.delete()
                         else:
-                            if i.product.match == product.match and i.product.key == product.key and i.product.description == product.description:
+                            if i.product.match == product.match and i.product.key == product.key and i.product.description.split(":")[0] == product.description.split(":")[0]:
                                 print(i.product.id)
                                 i.delete()
 
@@ -662,6 +763,7 @@ def place_order(request):
         description = product.description
         price = product.price
         name = product.match.match_name
+        payout_date_utx = product.match.commence_time_unix
         to_win = 0
         if price > 0:
             to_win = round(int(price) / 100 * float(wager), 2)
@@ -670,7 +772,7 @@ def place_order(request):
         order_item, _ = OrderItem.objects.get_or_create(product=product, price=price)
         order_item.save()
         
-        order = Order.objects.create(customer=customer, name=name, description=description, wager=wager, to_win=to_win, status='Pending', price=price, payment_method=payment_method)
+        order = Order.objects.create(customer=customer, name=name, description=description, wager=wager, to_win=to_win, status='Pending', price=price, payment_method=payment_method, payout_date_utx=payout_date_utx)
         order.products.add(order_item)
         order.save()
 
@@ -702,8 +804,7 @@ def place_order(request):
         order = Order.objects.create(customer=customer, status='Pending', wager=wager)
         odds = 1
         description = ""
-
-        
+        payout_date_utx = 0
 
         for cart_item in parlay_items:
 
@@ -713,6 +814,10 @@ def place_order(request):
             to_win = 0
             order_item, _ = OrderItem.objects.get_or_create(product=product, price=product.price)
             order_item.save()
+
+            if int(product.match.commence_time_unix) > payout_date_utx:
+                payout_date_utx = int(product.match.commence_time_unix)
+
             if order_item.price > 0:
                 odds *= order_item.price / 100
             else:
@@ -735,11 +840,16 @@ def place_order(request):
         else:
             to_win = round(-100 /int(price) * float(wager), 2)
 
+        dt = datetime.utcfromtimestamp(payout_date_utx) - timedelta(hours=7, minutes=0) 
+        payout_date = dt.strftime('%b. %d - %-I:%M %p') 
+
         order.price = price
         order.description = description
         order.name = str(len(parlay_items)) + ' leg parlay'
         order.payment_method = payment_method
         order.to_win = round(to_win, 2)
+        order.payout_date_utx = payout_date_utx
+        order.payout_date = payout_date
         order.save()
 
         customer_obj = Customer.objects.get(pk=customer.id)
@@ -796,6 +906,8 @@ def get_prop_data(request):
         match_id = request.POST.get('match_id', 'None')
         prop_key = request.POST.get('prop_key', 'None')
         sport_group = request.POST.get('sport_group', 'None')
+
+        print("group", sport_group)
         PROP_URL = f"{API_BASE_URL}v4/sports/{sport_group}/events/{match_id}/odds?apiKey={API_KEY}&regions=us&oddsFormat=american&markets={prop_key}"
         response = requests.get(PROP_URL)
         prop_data = response.json()
@@ -805,16 +917,18 @@ def get_prop_data(request):
             match = Match.objects.get(match_id=match_id)
             prop_data_str = {}
 
+            
+
             if len(prop_data['bookmakers']) > 0:
                 for outcome in prop_data['bookmakers'][0]['markets'][0]['outcomes']:
 
                     winner = outcome['name']
-                    description = outcome['description']
                     price = outcome['price']
                     point = 0
                     if 'point' in outcome.keys():
                         point = outcome['point']
-
+                        
+                    description = outcome['description'] + ": " + winner + " " + str(point) + " " + prop_market_key_options[prop_key]
                     product, _ = Product.objects.update_or_create(
                         match = match,
                         key = prop_key,
@@ -831,11 +945,11 @@ def get_prop_data(request):
                     row_data['point'] = point
                     row_data['id'] = product.id
 
-                    if description in prop_data_str:
-                        prop_data_str[description].append(row_data)
+                    if outcome['description'] in prop_data_str:
+                        prop_data_str[outcome['description']].append(row_data)
 
                     else:
-                        prop_data_str[description] = [row_data]
+                        prop_data_str[outcome['description']] = [row_data]
                 prop_data_str = json.dumps(prop_data_str)
                 return HttpResponse(prop_data_str)
             else:

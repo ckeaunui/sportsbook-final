@@ -102,11 +102,11 @@
                     <table class="table table-sm">
                         <tr>
                             <th>User</th>
-                            <th>Name</th>
+                            <th>Game</th>
                             <th>Description</th>
                             <th>Price</th>
                             <th>Wager</th>
-                            <th>To Win</th>
+                            <th>Payout</th>
                             <th>Date</th>
                             <th>Payment Method</th>
                             <th>Status</th>
@@ -117,7 +117,7 @@
                             <tr>
                                 <td>{{ order.customer.name }}</td>
                                 <td>{{ order.name}}</td>
-                                <td>{{ order.description }}</td>
+                                <td class="dashboard-description">{{ order.description }}</td>
                                 <td>
                                     {% if order.price > 0 %}
                                         +{{ order.price }}
@@ -362,11 +362,6 @@
         width: 100%;
     }
 
-    th, td {
-        text-align: center;
-        align-items: center;
-    }
-
     td {
         font-size: 15px;
         padding: 5px;
@@ -378,6 +373,7 @@
     th {
         height: 35px;
         vertical-align: center;
+        padding: 10px;
     }    
 
     .table-sm {
@@ -386,6 +382,10 @@
 
     tr {
         border-top: 2px solid #273452;
+    }
+
+    .dashboard-description {
+        white-space: pre;
     }
 
     

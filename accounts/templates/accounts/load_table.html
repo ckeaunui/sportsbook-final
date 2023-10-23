@@ -187,6 +187,7 @@
 
                     } else {
                         let obj = JSON.parse(data);
+                        console.log(obj);
                         for (player in obj) {
                             let player_row = document.createElement('div');
                             let player_name = document.createElement('div');
@@ -225,7 +226,7 @@
                                 prop_odds_input.setAttribute('value', parseInt(obj[player][i]['id']));
                                 prop_odds_input.setAttribute('type', 'checkbox');
                                 prop_odds_input.setAttribute('class', 'prop-price');
-                                prop_odds_input.setAttribute('name', player + prop_key);  // Change name to match other input
+                                prop_odds_input.setAttribute('name', player + ":" + prop_key);
                                 let in_cart = "{{ in_cart }}";
                                 let ids = in_cart.replaceAll("{", "").replaceAll("}", "").replaceAll(": None", "").replaceAll(" ", "").split(",");
 
@@ -244,8 +245,12 @@
                         var checkboxes = document.querySelectorAll(".prop-price");
                         checkboxes.forEach(el => el.addEventListener('change', event => {
                             event.preventDefault();
+
+                            
+
                             var bet_type = '{{ bet_type }}';
                             var value = el.value;
+                            console.log('val: ', el.name.split(":")[0]);
                             console.log("Sent-val: ", value, typeof value);
 
                             $('input[type="checkbox"]').on('change', function() {
@@ -258,7 +263,7 @@
                                 csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
                                 value: value,
                                 bet_type: bet_type,
-                                name: el.name,
+                                name: el.name.split(":")[0],
                             };
                             $.ajax({
                                 type : 'POST',
@@ -588,6 +593,7 @@
 
         .prop-price-label {
             display: block;
+            white-space: pre;
         }
 
         #prop-odds-header {
