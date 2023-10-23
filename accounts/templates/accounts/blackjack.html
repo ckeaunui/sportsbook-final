@@ -75,9 +75,9 @@
 
 	div#phand, div#dhand {
 		font-weight: 700;
-		/*left: 50%;*/
+		left: -440px;
 		position: absolute;
-		top: -122px;
+		top: -95px;
 		white-space: nowrap;
 		width: 1000px;
 	}
@@ -740,38 +740,10 @@
 						speed = 500;
 						$(ele + ' div.card-' + i).attr('id', 'pcard-' + i);
 
-						if(hand.length < 2) {
-							$('#pcard-0').popover({
-								animation: false,
-								container: '#pcard-0',
-								content: player.getScore(),
-								placement: 'left',
-								title: 'You Have',
-								trigger: 'manual'
-							});
-
-							setTimeout(function() {
-								$('#pcard-0').popover('show');
-								$('#pcard-0 .popover').css('display', 'none').fadeIn();
-							}, 500);
-						}
+	
 					} else {
 						$(ele + ' div.card-' + i).attr('id', 'dcard-' + i);
 
-						if(hand.length < 2) {
-							$('#dcard-0').popover({
-								container: '#dcard-0',
-								content: dealer.getScore(),
-								placement: 'left',
-								title: 'Dealer Has',
-								trigger: 'manual'
-							});
-
-							setTimeout(function() {
-								$('#dcard-0').popover('show');
-								$('#dcard-0 .popover').fadeIn();
-							}, 100);
-						}
 					}
 
 					$(ele + ' .card-' + i).css('z-index', i);
@@ -782,7 +754,6 @@
 					}, speed);
 
 					$(ele).queue(function() {
-						$(this).animate({ 'left': '-=25.5px' }, 100);
 						$(this).dequeue();
 					});
 				} else {
@@ -804,7 +775,6 @@
 				$('#dhand').html('');
 				$('#phand').html('');
 				$('#result').html('');
-				$('#phand, #dhand').css('left', 0);
 			}
 
 			function getWinner() {
