@@ -337,11 +337,15 @@ def sports(request, sport_group):
     sports = response.json()
     leagues = []
     load_league = None
+
     for sport in sports:
         if sport['group'] == sport_group and not sport['has_outrights']:
             leagues.append(sport)
     if len(leagues) > 0:
-        load_league = leagues[0]['key']
+        if sport_group == 'American Football':
+            load_league = 'americanfootball_nfl'
+        else:
+            load_league = leagues[0]['key']
         return redirect('load_table', sport_group=sport_group, league_key=load_league, bet_type='straight')
     context = {'leagues': leagues, 'sport_group': sport_group}
     return render(request, 'accounts/sports.html', context)
@@ -397,6 +401,12 @@ def delete_user(request, username):
     user = User.objects.filter(username=username)
     user.delete()
     return redirect('dashboard')
+
+
+@admin_only
+def confirm_delete_user(request, username):
+    context = {'username': username}
+    return render(request, 'accounts/confirm_delete_user.html', context)
 
 
 @admin_only
@@ -497,7 +507,8 @@ def load_table(request, sport_group, league_key, bet_type):
             sport_title = sport['title']
             commence_time_unix = int(match['commence_time'])
             commence_time = datetime.utcfromtimestamp(int(match['commence_time'])) - timedelta(hours=7, minutes=0) 
-            commence_time = commence_time.strftime('%b. %d - %-I:%M %p') 
+            commence_time = commence_time.strftime('%b. %d - %-I:%M %p')
+            print(commence_time)
             match['commence_time'] = commence_time
             team1 = ""
             team2 = ""
@@ -635,9 +646,6 @@ def checkout(request):
             price = item.product.price
             cart_item_id = item.id
 
-            if item.product.key not in ['spreads', 'h2h', 'totals']:
-                print('props turn: ', item.product.description)
-
             if price > 0:
                 parlay_odds *= 1 + price / 100
             else:
@@ -646,7 +654,12 @@ def checkout(request):
             row_data = {'date': date, 'game': game, 'outcome': outcome, 'price': price, 'cart_item_id': cart_item_id}
             parlay_data.append(row_data)
         parlay_odds -= 1
-        parlay_price = round(parlay_odds * 100)
+        parlay_price = 0
+        if parlay_odds >= 1:
+            parlay_price = round(parlay_odds * 100)
+        else:
+            parlay_price = round(-100 / parlay_odds)
+
         parlay_max_wager = 100
         if parlay_odds != 0:
             parlay_max_wager = round(5000 * 100 / parlay_odds) / 100
@@ -808,7 +821,7 @@ def place_order(request):
 
         for cart_item in parlay_items:
 
-            print(cart_item)
+            print(cart_item.product.description, cart_item.product.price)
 
             product = cart_item.product
             to_win = 0
@@ -818,12 +831,12 @@ def place_order(request):
             if int(product.match.commence_time_unix) > payout_date_utx:
                 payout_date_utx = int(product.match.commence_time_unix)
 
-            if order_item.price > 0:
-                odds *= order_item.price / 100
+            if product.price > 0:
+                odds *= 1 + product.price / 100
             else:
-                odds *= 1 + -100 / order_item.price
+                odds *= 1 + -100 / product.price
 
-            description += order_item.product.match.match_name  + ': ' + order_item.product.description + '\n'
+            description += product.match.match_name  + ': ' + product.description + '\n'
             order.products.add(order_item)
             cart_item.delete()
         

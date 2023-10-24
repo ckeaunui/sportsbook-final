@@ -14,7 +14,9 @@ urlpatterns = [
     path('roulette/', views.roulette, name="roulette"),
     path('casino/', views.casino, name="casino"),
     path('blackjack/', views.blackjack, name="blackjack"),
-    path(r'^delete_user/(?P<username>\d+)', views.delete_user, name="delete_user"),
+    path("delete_user/<str:username>/", views.delete_user, name="delete_user"),
+    path("confirm_delete_user/<str:username>/", views.confirm_delete_user, name="confirm_delete_user"),
+
     path("edit_user/<str:pk>/", views.edit_user, name="edit_user"),
     path("edit_order/<str:pk>/", views.edit_order, name="edit_order"),
     path("remove_from_cart/", views.remove_from_cart, name="remove_from_cart"),
@@ -27,6 +29,5 @@ urlpatterns = [
     path("place_wager/", views.place_wager, name="place_wager"),
     path("add_to_balance/", views.add_to_balance, name="add_to_balance"),
 
-    
 ]
 

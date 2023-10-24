@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PlusEv</title>
+ 
+</head>
+<body>
+    <div class="background-delete-user">
+        <div class="display-delete">
+            <h3>Delete User</h3>
+            <div class="confirm-delete-text">Are you sure you want to delete user:<span style="color: yellow;">{{ username }}</span></div>
+            <p style="color:red;">Warning: This action can not be undone.</p>
+
+            <div class="confirm-delete-buttons">
+                <a class="button2" id="delete-user-btn" href="{% url 'delete_user' username %}" onclick="hide('popup')">Confirm</a>
+                <a class="button" href="{% url 'dashboard' %}">Cancel</a>
+            </div>
+            
+        </div>
+    </div>
+</body>
+<style>
+    body {
+        width: 100%;
+        height: 100%;
+        background-color: #060d1f;
+    }
+
+    .display-delete {
+        color: #fefefe;
+        background-color: #273452;
+        width: 350px;
+        height: 350px;
+        margin: auto;
+        top: 100px;
+        background: #273452;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        padding: 10px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 5px;
+    }
+
+    .display-delete h3 {
+        width: 100%;
+        text-align: center;
+    }
+
+    .display-delete p {
+        width: 100%;
+        text-align: center;
+    }
+
+    .confirm-delete-text {
+        margin-top: 100px;
+        text-align: center;
+    }
+
+    .confirm-delete-buttons {
+        margin: auto;
+    }
+
+    .button, .button2 {
+        border: none;
+        color: #fff;
+        font-size: 15px;
+        cursor: pointer;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .button {
+        background-color: #F04A49;
+    }
+
+    .button:hover {
+        background-color: red;
+        color: #FFF;
+    }
+
+    .button2 {
+        background-color: #04AA6D;
+    }
+
+    .button2:hover {
+        background-color: #F04A49;
+        color: #FFF;
+    }
+
+    
+</style>
+</html>

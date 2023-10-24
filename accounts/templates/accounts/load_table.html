@@ -122,6 +122,10 @@
                 'player_goals_scored_over': 'Goals scored (Over only)'
             }
         }
+
+        if (performance.navigation.type == 2) {
+            location.reload(true);
+        }
         
         let links = document.getElementsByClassName('sidenav-link');
         for (let i = 0; i < links.length; i++) {
@@ -147,6 +151,9 @@
         function show_props(match_id, match_name) {
             
             if ('{{ league_title }}' in prop_market_keys) {
+
+                document.getElementById('prop-odds-header').textContent = "";
+                document.getElementById('prop-odds-container').innerHTML = "";
 
                 document.getElementById('prop-popup').hidden = false;
                 let header = document.getElementById("prop-popup-header");
@@ -180,7 +187,7 @@
                 success: function(data) {
                     document.getElementById('prop-odds-header').textContent = prop_market_keys['{{ league_title }}'][prop_key];
                     let props_container = document.getElementById('prop-odds-container');
-                        props_container.innerHTML = "";
+                    props_container.innerHTML = "";
 
                     if (data == "No Data Available") {
                         props_container.textContent = data;
@@ -330,7 +337,7 @@
                             <tr>
                                 <td class="header-cell">
                                     <div class="cell-container header-container">
-                                        <div class="commence-time td-row">{{ match.commence_time }} EST</div>
+                                        <div class="commence-time td-row">{{ match.commence_time }} PST</div>
                                         <div class="td-row">{{ match.team1 }} vs.</div>
                                         <div class="td-row">{{ match.team2 }}</div>
                                         {% if has_draw %}
@@ -392,8 +399,8 @@
                             <tr>
                                 <td class="header-cell">
                                     <div class="cell-container header-container">
-                                        <div class="commence-time td-row">{{ match.commence_time }} EST</div>
-                                        <div class="td-row">{{ match.team1 }}</div>
+                                        <div class="commence-time td-row">{{ match.commence_time }} PST</div>
+                                        <div class="td-row">{{ match.team1 }} vs.</div>
                                         <div class="td-row">{{ match.team2 }}</div>
                                         {% if has_draw %}
                                             <div class="td-row">Draw</div>
@@ -475,18 +482,21 @@
             </script>
         {% endfor %}
     </form>
-    <div id="prop-popup" hidden>
-        <h1 id="prop-popup-header"></h1>
-        <hr color="d34262">
-        <div class="prop-subcontainer">
-            <div id="prop-options" class="prop-data-container"></div>
-            <div id="prop-odds" class="prop-data-container">
-                <h3 id="prop-odds-header"></h3>
-                <div id="prop-odds-container"></div>
+    <div id="prop-popup-backdrop">
+        <div id="prop-popup" hidden>
+            <h1 id="prop-popup-header"></h1>
+            <hr color="d34262">
+            <div class="prop-subcontainer">
+                <div id="prop-options" class="prop-data-container"></div>
+                <div id="prop-odds" class="prop-data-container">
+                    <h3 id="prop-odds-header"></h3>
+                    <div id="prop-odds-container"></div>
+                </div>
             </div>
-        </div>        
-        <button id="close-prop-btn" type="button" class="button2" onclick="close_props()">Close</button>
+            <button id="close-prop-btn" type="button" class="button2" onclick="close_props()">Close</button>
+        </div>
     </div>
+    
     <script>
         var checkboxes = document.querySelectorAll(".wager");
         checkboxes.forEach(el => el.addEventListener('change', event => {
@@ -626,6 +636,12 @@
 
         .td-row {
             padding-top: 10px;
+        }
+
+        #prop-popup-backdrop {
+            background-color: red;
+            height: 100vh;
+            width: 100vw;
         }
 
 

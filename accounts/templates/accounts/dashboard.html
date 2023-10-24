@@ -8,8 +8,9 @@
             return document.getElementById(id);
         }
 
-        var show = function(id) {
+        var show = function(id, customer_name) {
             $(id).style.display ='block';
+
         }
         var hide = function(id) {
             $(id).style.display ='none';
@@ -42,6 +43,10 @@
                 <div class="col">
                     <h3 class="card-title">Tokens Used (Resets monthly)</h3>   
                     <p class="card-title">{{ tokens_used }} / {{ total_tokens }}</p>
+                </div>
+                <div class="col">
+                    <h3 class="card-title">Total profit</h3>   
+                    <p class="card-title">$0</p>
                 </div>
             </div>
 
@@ -78,16 +83,7 @@
                                 <td>0</td>
                                 <td>
                                     <a class="button2" href="{% url 'edit_user' pk=customer.id %}">Edit</a>
-                                    <button class="button" href="#" onclick="show('popup')">Delete</button>
-
-                                    <!-- This is what will be included inside the popup -->
-                                    <div class="popup" id="popup">
-                                        <h3>Confirm User Delete</h3>
-                                        <p>Are you sure you want to permanently delete user: <span style="color:yellow;">{{ customer.name }}</span>?</p>
-                                        <p style="color:red;">Warning: This action can not be undone.</p>
-                                        <a href="{% url 'delete_user' customer.name %}" onclick="hide('popup')">Confirm</a>
-                                        <a href="#" onclick="hide('popup')">Cancel</a>
-                                    </div>
+                                    <a class="button" id="confirm-delete-user-btn" href="{% url 'confirm_delete_user' customer.name %}">Delete</a>
                                     
                                 </td>
                             </tr>
@@ -253,10 +249,12 @@
     }
 
     .header-row div {
-        margin: 45px;
+        margin-left: auto;
+        margin-right: auto;
         background-color: #151d33;
         padding: 10px 20px;
         border-radius: 10px;
+        
     }
 
 
