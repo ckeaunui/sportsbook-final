@@ -15,6 +15,61 @@
         var hide = function(id) {
             $(id).style.display ='none';
         }
+
+        function sort_users(by) {
+            document.getElementById('customer-table').innerHTML = "";
+            let sorted_list = "{{ customers_username_sorted }}";
+            if (by == 'user') {
+                sorted_list = "{{ customers_username_sorted }}";
+
+            } else if (by == 'balance') {
+                sorted_list = "{{ customers_balance_sorted }}";
+                
+            } else if (by == 'pending') {
+                sorted_list = "{{ customers_pending_sorted }}";
+
+            } else if (by == 'freeplay') {
+                sorted_list = "{{ customers_freeplay_sorted }}";
+
+            }
+            reload_users_table(sorted_list);
+        }
+
+        function reload_users_table(ordered_list) {
+            let ordered_table = document.getElementById('customer-table');
+            ordered_table.innerHTML = "<tr><th>User</th><th>Credit</th><th>Balance</th><th>Pending</th><th>Freeplay</th><th>Weekly Profit</th><th>Active Bets</th><th></th><th></tr>";
+                console.log(ordered_list)
+                for (i in ordered_list) {
+
+                console.log(i);
+
+                let row = document.createElement('tr');
+                let customer_name = document.createElement('td');
+                let customer_credit = document.createElement('td');
+                let customer_balance = document.createElement('td');
+                let customer_pending = document.createElement('td');
+                let customer_freeplay = document.createElement('td');
+                let customer_weekly_profit = document.createElement('td');
+                let customer_edit = document.createElement('td');
+
+                customer_name.textContent = i ;
+                customer_credit.textContent = '1';
+                customer_balance.textContent = '1';
+                customer_pending.textContent = '1';
+                customer_freeplay.textContent = '1';
+                customer_weekly_profit.textContent = '1';
+                customer_edit.textContent = '1';
+
+                row.appendChild(customer_name);
+                row.appendChild(customer_credit);
+                row.appendChild(customer_balance);
+                row.appendChild(customer_pending);
+                row.appendChild(customer_freeplay);
+                row.appendChild(customer_weekly_profit);
+                row.appendChild(customer_edit);
+                ordered_table.appendChild(row)
+            }
+        }
         
     </script>
 
@@ -38,27 +93,41 @@
                 </div>
                 <div class="col">
                     <h3 class="card-title">Weekly Profit</h3>
-                    <p class="card-title">$0</p>
+                    <p class="card-title">${{ net_total }}</p>
+                </div>
+                 <div class="col">
+                    <h3 class="card-title">Total profit</h3>   
+                    <p class="card-title">${{ net_total }}</p>
                 </div>
                 <div class="col">
                     <h3 class="card-title">Tokens Used (Resets monthly)</h3>   
                     <p class="card-title">{{ tokens_used }} / {{ total_tokens }}</p>
                 </div>
-                <div class="col">
-                    <h3 class="card-title">Total profit</h3>   
-                    <p class="card-title">$0</p>
-                </div>
+               
             </div>
 
 
             <div class="col-md-6 bg">
                 <span>
                     <h5>USERS</h5>
+                    <div id="customer-filter-dropdown">
+                        <button class="dropbtn button2" type="button">Filter</button>
+                        <div class="dropdown-content">
+                            <button id="name" onclick="sort_users('name')">Name A-Z</button>
+                            <button id="balance" onclick="sort_users('balance')">Balance</button>
+                            <button id="freeplay" onclick="sort_users('freeplay')">Freeplay</butotn>
+                            <button id="pending" onclick="sort_users('pending')">Pending</button>
+                        </div>
+                    </div>
                     <a class="button2 logout" href="{% url 'register' %}">Add User</a>
+                    
                 </span>
+                
                 <div class="card card-body">
 
-                    <table class="table customer-table">
+                    
+
+                    <table id="customer-table" class="table customer-table">
                         <tr>
                             <th>User</th>
                             <th>Credit</th>
@@ -71,7 +140,7 @@
                             <th>
                         </tr>
 
-                        {% for customer in customers %}
+                        {% for customer in customers_username_sorted %}
 
                             <tr>
                                 <td>{{ customer.name }}</td>
@@ -219,12 +288,16 @@
         padding: 10px;
     }
 
+    .row {
+        margin-top: 20px;
+    }
+
     .bg {
         background-color: #151d33;
         padding: 10px;
     }
 
-    .row div {
+    .header-row, .col-md-6, .col-md-5, .header-row {
         border-radius: 10px;
         margin-top: 15px;
     }
@@ -255,6 +328,7 @@
         padding: 10px 20px;
         border-radius: 10px;
         
+
     }
 
 
@@ -365,12 +439,12 @@
         padding: 5px;
         padding-left: 10px;
         text-align: left;
-        min-height: 35px;
+        height: 35px;
 
     }
 
     th {
-        min-height: 35px;
+        height: 35px;
         vertical-align: center;
         padding: 10px;
     }    
@@ -386,6 +460,98 @@
 
     .dashboard-description {
         white-space: pre;
+    }
+
+    #customer-filter-dropdown {
+        width: 103px;
+    }
+
+    .dropbtn, .type-btn {
+        background-color: #04AA6D;
+        color: white;
+        padding: 15px;
+        padding-right: 35px;
+        padding-left: 35px;
+        font-size: 16px;
+        border: none;
+        border-radius: 10px;
+    }
+
+    .dropdown-content a {
+        text-align: left;
+        color: black;
+        padding: 5px;
+        text-decoration: none;
+        display: block;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    #customer-filter-dropdown:hover .dropdown-content {
+        display: block;
+        background-color: #fff;
+    }
+
+    #customer-filter-dropdown:hover .dropbtn {
+        background-color: #3e8e41;
+    }
+
+    .dropbtn {
+        width: 100%;
+    }
+
+    .active {
+        background-color: red;
+    }
+
+    .dropbtn, .type-btn {
+        background-color: #04AA6D;
+        color: white;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        padding: 9px;
+
+    }
+        
+    #customer-filter-dropdown {
+        position: relative;
+        display: inline-block;
+        border-radius: 10px;
+        width: 50%;
+        margin-top: 0px;
+    }
+        
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        max-height: 300px;
+        width: 100%;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        overflow-y: scroll;
+        z-index: 1;
+        margin-top: 0px;
+    }
+        
+    .dropdown-content a:hover {
+        background-color: #ddd;
+    }
+        
+    #customer-filter-dropdown:hover .dropdown-content {
+        display: block;
+    }
+        
+    #customer-filter-dropdown:hover .dropbtn {
+        background-color: #3e8e41;
+    }
+
+    .dropbtn {
+        width: 100%;
+    }
+
+    #customer-filter-dropdown {
+        margin-bottom: 15px;
     }
 
     
