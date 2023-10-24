@@ -244,7 +244,6 @@
 		/*****************************************************************/
 
 			function Player() {
-				console.log(parseInt("{{ customer.balance }}") + parseInt("{{ customer.credit }}"))
 				var hand  = [],
 						wager = 0,
 						cash  = parseInt("{{ customer.balance }}") + parseInt("{{ customer.credit }}"),
@@ -800,7 +799,6 @@
 						player.setBank(winnings - wager);
 						$('#alert').removeClass('alert-info alert-error').addClass('alert-success');
 						result = 'Blackjack!';
-						console.log('winnings', winnings);
 
 					} else if(pscore <= 21) {
 						winnings = wager * 2;
@@ -808,7 +806,6 @@
 						player.setBank(winnings - wager);
 						$('#alert').removeClass('alert-info alert-error').addClass('alert-success');
 						result = 'You win!';
-						console.log('winnings', winnings);
 
 					} else if(pscore > 21) {
 						winnings -= wager;
@@ -823,7 +820,6 @@
 						player.setBank(winnings - wager);
 						$('#alert').removeClass('alert-info alert-error').addClass('alert-success');
 						result = 'You win - dealer bust!';
-						console.log('winnings', winnings);
 
 					} else if(dscore <= 21) {
 						winnings -= wager;
@@ -852,7 +848,6 @@
 					}
 				}
 
-				console.log('final winnings', winnings, wager);
 				if (winnings > 0) {
 					// add to balance here
 					// Ajax update user balance here (subtract bet amount)

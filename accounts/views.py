@@ -531,7 +531,6 @@ def load_table(request, sport_group, league_key, bet_type):
             commence_time_unix = int(match['commence_time'])
             commence_time = datetime.utcfromtimestamp(int(match['commence_time'])) - timedelta(hours=7, minutes=0) 
             commence_time = commence_time.strftime('%b. %d - %-I:%M %p')
-            print(commence_time)
             match['commence_time'] = commence_time
             team1 = ""
             team2 = ""
@@ -735,8 +734,6 @@ def add_to_cart(request):
                         if i == cart_item:
                             continue
 
-                        print("i:", i.product.key, i.product.match, i.product.description.split(":")[0])
-
                         if (cart_item.product.key == 'h2h' or cart_item.product.key == 'spreads'):
                             if i.product.match == product.match and (i.product.key == 'h2h' or i.product.key == 'spreads') and (product.key == 'h2h' or product.key == 'spreads'):
                                 i.delete()
@@ -746,13 +743,8 @@ def add_to_cart(request):
                                 i.delete()
                         else:
                             if i.product.match == product.match and i.product.key == product.key and i.product.description.split(":")[0] == product.description.split(":")[0]:
-                                print(i.product.id)
-                                i.delete()
-
-                            # Prop sent
-                            print("prop adding to cart. Prod:", product)
-                            
-
+                                i.delete()                            
+                                
             else:
                 cart_item.delete()
         return HttpResponse(status=200)
@@ -770,12 +762,9 @@ def remove_from_cart(request):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['customer', 'admin'])
 def edit_wager(request):
-    print("Updating...")
     if request.method == 'POST':
         pk = request.POST.get('id', 'None')
         wager = request.POST.get('wager', 'None')
-        print('pk:', pk)
-        print('wager:', wager)
         cart_item = CartItem.objects.get(pk=pk)
         cart_item.wager = float(wager)
         cart_item.save()
@@ -843,9 +832,6 @@ def place_order(request):
         payout_date_utx = 0
 
         for cart_item in parlay_items:
-
-            print(cart_item.product.description, cart_item.product.price)
-
             product = cart_item.product
             to_win = 0
             order_item, _ = OrderItem.objects.get_or_create(product=product, price=product.price)
@@ -942,8 +928,6 @@ def get_prop_data(request):
         match_id = request.POST.get('match_id', 'None')
         prop_key = request.POST.get('prop_key', 'None')
         sport_group = request.POST.get('sport_group', 'None')
-
-        print("group", sport_group)
         PROP_URL = f"{API_BASE_URL}v4/sports/{sport_group}/events/{match_id}/odds?apiKey={API_KEY}&regions=us&oddsFormat=american&markets={prop_key}"
         response = requests.get(PROP_URL)
         prop_data = response.json()
