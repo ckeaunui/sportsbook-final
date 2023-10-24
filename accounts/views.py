@@ -21,7 +21,6 @@ import json
 
 from .models import *
 from .forms import *
-
 from .decorators import unauthenticated_user, allowed_users, admin_only
 
 
@@ -312,6 +311,23 @@ def dashboard(request):
     orders = Order.objects.all()
     pending_bets = orders.filter(status='Pending')
     pending_total = 0
+    net_total = 0
+
+    lost_bets = orders.filter(status='Wager Lost')
+    won_bets = orders.filter(status='Wager Won')
+
+    for bet in lost_bets:
+        if bet.payment_method == 'Credit':
+            net_total -= bet.wager
+    
+    for bet in won_bets:
+        net_total += bet.to_win
+    net_total = round(net_total, 2)
+
+    customers_username_sorted = customers.order_by('user')
+    customers_balance_sorted = customers.order_by('balance')
+    customers_freeplay_sorted = customers.order_by('freeplay')
+    customers_pending_sorted = customers.order_by('pending')
 
     for pending in pending_bets:
         pending_total += pending.wager
@@ -322,12 +338,17 @@ def dashboard(request):
             form.save()
     context = {
         'customers': customers, 
+        'customers_username_sorted': customers_username_sorted,
+        'customers_balance_sorted': customers_balance_sorted,
+        'customers_freeplay_sorted': customers_freeplay_sorted,
+        'customers_pending_sorted': customers_pending_sorted,
         'orders': orders, 
         'pending_bets': pending_bets, 
         'tokens_used': tokens_used, 
         'total_tokens': total_tokens, 
         'form': form,
         'pending_total': pending_total,
+        'net_total': net_total,
     }
     return render(request, 'accounts/dashboard.html', context) 
 
