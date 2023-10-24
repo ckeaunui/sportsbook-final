@@ -1,144 +1,395 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html>
 <head>
-    
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>PlusEV</title>
-    <link rel="stylesheet" data-purpose="Layout StyleSheet" title="Web Awesome" href="/css/app-wa-02670e9412103b5852dcbe140d278c49.css?vsn=d">
-    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css">
-    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/sharp-solid.css">
-    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/sharp-regular.css">
-    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/sharp-light.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <title>PlusEV:Admin</title>
+    <script src="https://kit.fontawesome.com/cfe57839c8.js" crossorigin="anonymous"></script>
+    <script>
+        $ = function(id) {
+            return document.getElementById(id);
+        }
 
-    {% block style %}
-    {% endblock style %}
+        var show = function(id, customer_name) {
+            $(id).style.display ='block';
+
+        }
+        var hide = function(id) {
+            $(id).style.display ='none';
+        }
+
+        function sort_users(by) {
+            document.getElementById('customer-table').innerHTML = "";
+            let sorted_list = "{{ customers_username_sorted }}";
+            if (by == 'user') {
+                sorted_list = "{{ customers_username_sorted }}";
+
+            } else if (by == 'balance') {
+                sorted_list = "{{ customers_balance_sorted }}";
+                
+            } else if (by == 'pending') {
+                sorted_list = "{{ customers_pending_sorted }}";
+
+            } else if (by == 'freeplay') {
+                sorted_list = "{{ customers_freeplay_sorted }}";
+
+            }
+            reload_users_table(sorted_list);
+        }
+
+        function reload_users_table(ordered_list) {
+            let ordered_table = document.getElementById('customer-table');
+            ordered_table.innerHTML = "<tr><th>User</th><th>Credit</th><th>Balance</th><th>Pending</th><th>Freeplay</th><th>Weekly Profit</th><th>Active Bets</th><th></th><th></tr>";
+                console.log(ordered_list)
+                for (i in ordered_list) {
+
+                console.log(i);
+
+                let row = document.createElement('tr');
+                let customer_name = document.createElement('td');
+                let customer_credit = document.createElement('td');
+                let customer_balance = document.createElement('td');
+                let customer_pending = document.createElement('td');
+                let customer_freeplay = document.createElement('td');
+                let customer_weekly_profit = document.createElement('td');
+                let customer_edit = document.createElement('td');
+
+                customer_name.textContent = i ;
+                customer_credit.textContent = '1';
+                customer_balance.textContent = '1';
+                customer_pending.textContent = '1';
+                customer_freeplay.textContent = '1';
+                customer_weekly_profit.textContent = '1';
+                customer_edit.textContent = '1';
+
+                row.appendChild(customer_name);
+                row.appendChild(customer_credit);
+                row.appendChild(customer_balance);
+                row.appendChild(customer_pending);
+                row.appendChild(customer_freeplay);
+                row.appendChild(customer_weekly_profit);
+                row.appendChild(customer_edit);
+                ordered_table.appendChild(row)
+            }
+        }
+        
+    </script>
 
 </head>
 <body>
-    {% include 'accounts/sidebar.html' %}
-    {% include 'accounts/navbar.html' %}
-    
-    <span id="temp"> 
-        <div id="block">
-            {% block content %}
+    <div>
+        <h1>Admin Page</h1>
 
-            {% endblock %}
-        </div>  
-    </span>
+        <a class="button2" href="{% url 'sports' sport_group='American Football' %}">Customer View</a>
+        <a id="logout" class="button2" href="{% url 'logout' %}">Logout</a>
+        <br>
+        <div class="row">
+            <div class="header-row">
+                <div class="col">
+                    <h3 class="card-title">Bets Pending</h3>
+                    <p class="card-title">{{ pending_bets.count }}</p>
+                </div>
+                <div class="col">
+                    <h3 class="card-title">Total Pending</h3>   
+                    <p class="card-title">${{ pending_total }}</p>
+                </div>
+                <div class="col">
+                    <h3 class="card-title">Weekly Profit</h3>
+                    <p class="card-title">${{ net_total }}</p>
+                </div>
+                 <div class="col">
+                    <h3 class="card-title">Total profit</h3>   
+                    <p class="card-title">${{ net_total }}</p>
+                </div>
+                <div class="col">
+                    <h3 class="card-title">Tokens Used (Resets monthly)</h3>   
+                    <p class="card-title">{{ tokens_used }} / {{ total_tokens }}</p>
+                </div>
+               
+            </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    {% block javascript %}
-    {% endblock javascript %}
-   
+
+            <div class="col-md-6 bg">
+                <span>
+                    <h5>USERS</h5>
+                    <div id="customer-filter-dropdown">
+                        <button class="dropbtn button2" type="button">Filter</button>
+                        <div class="dropdown-content">
+                            <button id="name" onclick="sort_users('name')">Name A-Z</button>
+                            <button id="balance" onclick="sort_users('balance')">Balance</button>
+                            <button id="freeplay" onclick="sort_users('freeplay')">Freeplay</butotn>
+                            <button id="pending" onclick="sort_users('pending')">Pending</button>
+                        </div>
+                    </div>
+                    <a class="button2 logout" href="{% url 'register' %}">Add User</a>
+                    
+                </span>
+                
+                <div class="card card-body">
+
+                    
+
+                    <table id="customer-table" class="table customer-table">
+                        <tr>
+                            <th>User</th>
+                            <th>Credit</th>
+                            <th>Balance</th>
+                            <th>Pending</th>
+                            <th>Freeplay</th>
+                            <th>Weekly Profit</th>
+                            <th>Active Bets</th>
+                            <th></th>
+                            <th>
+                        </tr>
+
+                        {% for customer in customers_username_sorted %}
+
+                            <tr>
+                                <td>{{ customer.name }}</td>
+                                <td>{{ customer.credit }}</td>
+                                <td>{{ customer.balance }}</td>
+                                <td>{{ customer.pending }}</td>
+                                <td>{{ customer.freeplay }}</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>
+                                    <a class="button2" href="{% url 'edit_user' pk=customer.id %}">Edit</a>
+                                    <a class="button" id="confirm-delete-user-btn" href="{% url 'confirm_delete_user' customer.name %}">Delete</a>
+                                    
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-5 bg">
+                <h5>BETS</h5>
+                <div class="card card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th>User</th>
+                            <th>Game</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Wager</th>
+                            <th>Payout</th>
+                            <th>Date</th>
+                            <th>Payment Method</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    
+                        {% for order in orders %}
+                            <tr>
+                                <td>{{ order.customer.name }}</td>
+                                <td>{{ order.name}}</td>
+                                <td class="dashboard-description">{{ order.description }}</td>
+                                <td>
+                                    {% if order.price > 0 %}
+                                        +{{ order.price }}
+                                    {% else %}
+                                        {{ order.price }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ order.wager }}</td>
+                                <td>{{ order.to_win }}</td>
+                                <td>{{ order.commence_time }}</td>
+                                <td>{{ order.payment_method }}</td>
+                                <td>{{ order.status }}</td>
+                                <td>        
+                                    <a class="button2" href="{% url 'edit_order' pk=order.id %}">Edit</a>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--
+        <div class="modal fade" id="editModal" tabindex="-1" arial-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialogue modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            
+                <form id="formEdit" action="">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group validate">
+                            <input type="text" name="owner" class="form-control" placeholder="1">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                        <div class="form-group validate">
+                            <input type="text" name="name" class="form-control" placeholder="2">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                        <div class="form-group validate">
+                            <input type="text" name="task_date" class="form-control" placeholder="3">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                        <div class="form-group validate">
+                            <input type="text" name="start_time" class="form-control" placeholder="4">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                        <div class="form-group validate">
+                            <input type="text" name="end_time" class="form-control" placeholder="5">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary btnUpdate">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>-->
+    <script>
+        $("#table tbody").on("click", ".link-delete", function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            if(confirm("sure?")) {
+                $.ajax({
+                    url: this.attr('href'),
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(resp) {
+                        if (resp.message == 'success') {
+                            $this.parents('.record').fadeOut('slow', function() {
+                                $this.parents.record.remove();
+                            })
+
+                        } else {
+                            alert(resp.message)
+                        }
+                    },
+                    error: function(resp) {
+                        console.log('Error');
+                    }
+
+
+                });
+            }
+        });
+    </script>
 </body>
-</html>
-
 
 <style>
 
-    html {
-        font-family: monospace;
+    .h5 {
+        padding: 10px;
     }
 
+    .row {
+        margin-top: 20px;
+    }
+
+    .bg {
+        background-color: #151d33;
+        padding: 10px;
+    }
+
+    .header-row, .col-md-6, .col-md-5, .header-row {
+        border-radius: 10px;
+        margin-top: 15px;
+    }
+
+    i {
+        color: red;
+    }
+    .col {
+        display: inline;
+    }
+
+    .card-title {
+        width: 100%;
+        display: block;
+        text-align: center;
+    }
+
+    .header-row {
+        width: 100%;
+        display: inline-flex;
+        margin: 0px;
+    }
+
+    .header-row div {
+        margin-left: auto;
+        margin-right: auto;
+        background-color: #151d33;
+        padding: 10px 20px;
+        border-radius: 10px;
+        
+
+    }
+
+
+    .popup {
+        display: none;
+        position: fixed;
+        padding: 30px;
+        width: 280px;
+        left: 50%;
+        margin-left: -150px;
+        height: 180px;
+        top: 50%;
+        margin-top: -100px;
+        background: #273452;
+        z-index: 20;
+    }
+
+    .popup a {
+        margin: 20px;
+        padding: 10px 20px;
+        text-decoration: none;
+        background-color: #04AA6D;
+    }
+
+    #popup:after, #delete-order-popup:after {
+        position: fixed;
+        content: "";
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: -2;
+
+    }
+
+    #popup:before, #delete-order-popup:before {
+        position: absolute;
+        content: "";
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: #273452;
+        z-index: -1;
+    }
+
+    /* Styling buttons & webpage */
 
     body {
-        color: #f3f4f5;
-        background-color: #060d1f;
-        overflow-x: hidden;
+        background: #060d1f;
+        color: #fefefe;
+        font-family: Arial, sans-serif;
+        text-align: left;
     }
-
-    #block {
-        margin-left: 200px;
-        margin-top: 61px;
-
-    }
-
-    .container {
-        display: flex;
-        align-items: center;
-
-    }
-
-    svg {
-        display: block;
-        font: 11.5em 'Montserrat';
-        margin: 0 auto;
-    }
-
-    h1 {
-        padding: 20px;
-        background-color: #151d33;
-        border-radius: 10px;
-    }
-
-    .text-copy {
-        fill: none;
-        stroke: white;
-        stroke-dasharray: 6% 29%;
-        stroke-width: 7px;
-        stroke-dashoffset: 0%;
-        animation: stroke-offset 5.5s infinite linear;
-    }
-
-    .text-copy:nth-child(1){
-        stroke: #5c98fb;
-        animation-delay: -1;
-    }
-
-    .text-copy:nth-child(2){
-        stroke: #88a9fc;
-        animation-delay: -2s;
-    }
-
-    .text-copy:nth-child(3){
-        stroke: #9688fb;
-        animation-delay: -3s;
-    }
-
-    .text-copy:nth-child(4){
-        stroke: #7a5ef9;
-        animation-delay: -4s;
-    }
-
-    .text-copy:nth-child(5){
-        stroke: #a6b5fc;
-        animation-delay: -5s;
-    }
-
-    .text-copy:nth-child(6){
-        stroke: #5d6fcd;
-        animation-delay: -6s;
-    }
-
-    .text-copy:nth-child(7){
-        stroke: #324ccf;
-        animation-delay: -7s;
-    }
-
-    @keyframes stroke-offset{
-        100% {stroke-dashoffset: -35%;}
-    }
-
-
-    /* Main content */
-    .main {
-        margin-left: 200px; /* Same as the width of the sidenav */
-        font-size: 20px; /* Increased text to enable scrolling */
-        padding: 0px 10px;
-    }
-
 
     .button, .button2 {
         border: none;
         color: #fff;
         font-size: 15px;
+        padding: 5px 10px;
         cursor: pointer;
         padding: 10px 20px;
         border-radius: 5px;
@@ -159,60 +410,62 @@
     }
 
     .button2:hover {
-        background-color: #F04A49;
+        background-color: green;
         color: #FFF;
     }
 
-    .button3 {
-        border: none;
-        color: #fff;
-        font: 10px;
-        padding: 7px 15px;
-        cursor: pointer;
-        border-radius: 5px;
-        text-decoration: none;
-        background-color: #F04A49;
+    .customer-table {
+        border-radius: 10px;
+        /*margin-right: 200px;*/
+        background-color: #151d33;
+        padding: 25px;
+        border-collapse: collapse;
+        margin-right: 350px;
+        width: 100%;  
 
     }
 
-    .wager {
-        max-width: 50px;
-    }
-
-    .spread-container {
-        text-align: right;
-    }
-
-    .casino-game {
-        background-color: green;
-        color: black;
-        padding: 75px;
-        margin: 25px;
-        display: block;
-        font-size: 5vw;
-        text-decoration: none;
-    }
-    
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-
-    tbody tr {
+    #customer-table tr {
         border-top: 2px solid #273452;
-        padding-right: 15px;
     }
 
-    .total-container {
-        padding-right: 45px;
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td {
+        font-size: 15px;
+        padding: 5px;
+        padding-left: 10px;
+        text-align: left;
+        height: 35px;
+
     }
 
     th {
-        padding-top: 20px;
-        padding-bottom: 20px;
+        height: 35px;
+        vertical-align: center;
+        padding: 10px;
+    }    
+
+    .table-sm {
+        background-color: #151d33;
     }
-    
+
+    tr {
+        border-top: 2px solid #273452;
+        height: 50px;
+    }
+
+    .dashboard-description {
+        white-space: pre;
+    }
+
+    #customer-filter-dropdown {
+        width: 103px;
+    }
+
     .dropbtn, .type-btn {
         background-color: #04AA6D;
         color: white;
@@ -234,12 +487,12 @@
         cursor: pointer;
     }
 
-    .dropdown:hover .dropdown-content {
+    #customer-filter-dropdown:hover .dropdown-content {
         display: block;
         background-color: #fff;
     }
 
-    .dropdown:hover .dropbtn {
+    #customer-filter-dropdown:hover .dropbtn {
         background-color: #3e8e41;
     }
 
@@ -257,15 +510,16 @@
         font-size: 16px;
         border: none;
         border-radius: 5px;
-        padding: 10px;
+        padding: 9px;
 
     }
         
-    .dropdown {
+    #customer-filter-dropdown {
         position: relative;
         display: inline-block;
         border-radius: 10px;
         width: 50%;
+        margin-top: 0px;
     }
         
     .dropdown-content {
@@ -277,338 +531,30 @@
         box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
         overflow-y: scroll;
         z-index: 1;
+        margin-top: 0px;
     }
         
     .dropdown-content a:hover {
         background-color: #ddd;
     }
         
-    .dropdown:hover .dropdown-content {
+    #customer-filter-dropdown:hover .dropdown-content {
         display: block;
     }
         
-    .dropdown:hover .dropbtn {
+    #customer-filter-dropdown:hover .dropbtn {
         background-color: #3e8e41;
     }
 
-    #match-data {
-        background-color: #151d33;
-        border-radius: 10px;
-        align-items: left;
-        text-align: right;
-        padding: 10px;
+    .dropbtn {
         width: 100%;
-        border-collapse: collapse;
     }
 
-    tbody tr {
-        border-top: 2px solid #273452;
+    #customer-filter-dropdown {
+        margin-bottom: 15px;
     }
     
-    td, th {
-        font-size: 0.4em;
-        padding-top: 10px;
-        padding-bottom: 10px;
-        margin-right: 50px;
-    }
-
-    .header-cell {
-        width: 25%;
-    }
-
-    th {
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-
-
-    #sport-group, #profile-header {
-        margin: 0px;
-        background-color: #151d33;
-        margin-bottom: 15px;
-        border-radius: 10px;
-        padding: 20px;
-        width: calc(100% - 30);
-        padding-left: 30px;
-    }
-
-    .commence-time {
-        font-size: 10px;
-        color: #d34262;
-    }
-
-    .cell-container {
-        text-align: right;
-    }
-
-    .header-container {
-        text-align: left;
-        padding-left: 10px;
-    }
-
-    table {
-        margin-top: 15px;
-    }
-
-    .profile-orders {
-        background-color: #151d33;
-        border-radius: 10px;
-        border-collapse: collapse;
-
-    }
-
-    .profile-orders th {
-        text-align: left;
-    }
-
-    @media only screen and (max-width: 800px) {
-        #block {
-            font-size: 19x;
-        }
-
-        .parlay-straight-toggle {
-            font-size: 12px;
-        }
-
-        .nav-val-label {
-            margin-top: 7px;
-            font-size: 9px;
-
-        }
-
-        .nav-link {
-            font-size: 9px;
-            padding: 15px 16px;
-            margin: 0px;
-            margin-top: 4px;
-            margin-right: 4px;
-            text-align: center;
-        }
-
-
-    }
-
-    @media only screen and (max-width: 610px) {
-
-        .sidenav {
-            display: none;  
-            z-index: 1000;
-            width: 100%;
-            height: 100%;
-            position: fixed;
-            top: 0%;
-
-        }
-
-        #block {
-            width: 100%;
-            margin-left: 0px;
-
-        }
-
-        #navbar-row {
-            margin-left: 0px;
-            width: 100%;
-            
-        }
-
-        .nav-val-label {
-            margin: 0px;
-            font-size: 7px;
-            padding-top: 9px;
-        }
-
-        .nav-link {
-            font-size: 7px;
-            padding: 5px 9px;
-            margin-top: 12px;
-        }
-
-        .sidebar-btn {
-            display: block;
-            margin: 0px;
-            height: 30px;
-            margin-top: 10px;
-            width: 40px;
-            border: none;
-            background-color: #151d33;
-            color: #15f489;
-            padding: 0px;
-            top: 5px;
-            left: 5px;
-            z-index: 101;
-        }
-
-        .sidebar-btn i {
-            margin: 8px;
-            width: 25px;
-            cursor: pointer;
-            height: 100%;
-            font-size: 19px;
-
-        }
-
-        .bet-type {
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        .bet-type a, .bet-type input, .dropbtn {
-            margin: 0px;
-            font-size: 12px;
-        }
-
-        .dropdown, .bet-type {
-            width: 100%;
-        }
-
-        .dropbtn {
-            width: 100%;
-            padding: 12px;
-        }
-
-        .dropdown {
-            margin-bottom: 15px;
-        }
-
-        .header-button {
-            width: 100%;
-        }
-
-        .parlay-straight-toggle, .parlay-straight-toggle a, .checkout {
-            padding: 12px 25px;
-            
-        }
-
-        #close-side-toggle {
-            display: block;
-            position: absolute;
-            top: 37px;
-            left: 15px;
-            background-color: #151d33;
-            color: #818181;
-            border-style: none;
-            font-size: 25px;
-        }
-
-        input[type="number"] {
-            width: 35px;
-        }
-
-        #roulette-container {
-            margin-left: 0px;
-        }
-
-        .container {
-            padding-bottom: 25px;
-
-        }
-
-        label span:first-of-type {
-            font-size: 8px;
-
-        }
-
-        input[type="radio"] { 
-            width: 75px;
-        }
-
-        label span {
-            top: -24px;
-        }
-
-        .checkout-table thead tr th {
-            font-size: 0.6em;
-        }
-
-        #wrapper {
-            background: transparent url('https://www.clowerweb.com/cors/blackjack/table.png') -300px 0 no-repeat;
-        }
-
-        .wheel {
-            margin-left: auto;
-            margin-right: auto;
-            left: 0px;
-        }
-
-        #container {
-            margin-left: 0px;
-            display: block;
-            height: 150vh;
-            width: 125vw;
-            zoom: 0.67;
-
-
-        }
-
-        #notification {
-            width: 100%;
-            
-        }
-
-        .chipDeck {
-            margin-left: 444px;
-            position: relative;
-            bottom: 51.5%;
-            rotate: -90deg;
-        }
-
-        #betting_board {
-            rotate: 90deg;
-            margin-left: 118px;
-            margin-top: 170px;
-            width: 530px;
-            border: none;
-
-        }
-
-        .bankContainer {
-            margin: 0px;
-            position: relative;
-            right: -500px;
-            bottom: 195px;
-            rotate: -90deg;
-        }
-
-        .pnBlock {
-            margin-top: -241px;
-            rotate: -90deg;
-            margin-left: 449px;
-
-        }
-
-        #checkout-title {
-            width: 900px;
-        }
-
-        .oto-board {
-            width: 540px;
-
-        }
-
-        .oto-block {
-            padding: 0px;
-        }
-
-        .bbtoptwo {
-            padding: 16px 0px;
-        }
-
-        .oto_block {
-            padding: 8px 0px;
-        }
-
-        .spinBtn {
-            position: absolute;
-            margin-top: 161px;
-            margin-left: 452px;
-        }
-
-
-
-
-    }
-
 
 </style>
 
+</html>
