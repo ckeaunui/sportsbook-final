@@ -21,7 +21,6 @@ import json
 
 from .models import *
 from .forms import *
-from .filters import *
 
 from .decorators import unauthenticated_user, allowed_users, admin_only
 
