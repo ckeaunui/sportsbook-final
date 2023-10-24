@@ -16,10 +16,12 @@ from django.views.generic import View
 import operator
 import time
 
+
 import json
 
 from .models import *
 from .forms import *
+from .filters import *
 
 from .decorators import unauthenticated_user, allowed_users, admin_only
 
@@ -311,6 +313,7 @@ def dashboard(request):
     orders = Order.objects.all()
     pending_bets = orders.filter(status='Pending')
     pending_total = 0
+
     for pending in pending_bets:
         pending_total += pending.wager
     form = CreateUserForm()
@@ -657,7 +660,7 @@ def checkout(request):
         parlay_price = 0
         if parlay_odds >= 1:
             parlay_price = round(parlay_odds * 100)
-        else:
+        elif parlay_odds > 0 and parlay_odds < 1:
             parlay_price = round(-100 / parlay_odds)
 
         parlay_max_wager = 100

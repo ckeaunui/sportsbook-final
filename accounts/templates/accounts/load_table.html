@@ -253,8 +253,6 @@
                         checkboxes.forEach(el => el.addEventListener('change', event => {
                             event.preventDefault();
 
-                            
-
                             var bet_type = '{{ bet_type }}';
                             var value = el.value;
                             console.log('val: ', el.name.split(":")[0]);
@@ -636,12 +634,6 @@
 
         .td-row {
             padding-top: 10px;
-        }
-
-        #prop-popup-backdrop {
-            background-color: red;
-            height: 100vh;
-            width: 100vw;
         }
 
 

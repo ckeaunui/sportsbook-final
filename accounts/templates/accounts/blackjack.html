@@ -456,7 +456,7 @@
 					function showCards() {
 						setTimeout(function() {
 							deal.dealCard(num, i + 1, obj);
-						}, 500);
+						}, 1000);
 					}
 
 					clearTimeout(showCards());
@@ -518,7 +518,7 @@
 
 					setTimeout(function() {
 						player.stand();
-					}, 500);
+					}, 1000);
 				} else {
 					this.getHand();
 				}
@@ -541,7 +541,7 @@
 						setTimeout(function() {
 							dealer.hit();
 							checkDScore();
-						}, 500);
+						}, 1000);
 					} else {
 						setTimeout(function() {
 							getWinner();
@@ -714,7 +714,7 @@
 						color = 'red',
 						posx  = 402,
 						posy  = 182,
-						speed = 200,
+						speed = 1000,
 						cards = ele + ' .card-' + i;
 
 				if(i > 0) {
@@ -737,7 +737,7 @@
 
 					if(ele === '#phand') {
 						posy  = 360;
-						speed = 500;
+						speed = 1000;
 						$(ele + ' div.card-' + i).attr('id', 'pcard-' + i);
 
 	
