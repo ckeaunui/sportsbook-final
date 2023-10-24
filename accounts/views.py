@@ -433,7 +433,7 @@ def confirm_delete_user(request, username):
 
 
 @admin_only
-def edit_user(request, pk):
+def edit_customer(request, pk):
     customer = Customer.objects.get(id=pk)
     form = EditUserForm(instance=customer)
     if request.method == 'POST':
@@ -442,7 +442,7 @@ def edit_user(request, pk):
             form.save()
             return redirect('dashboard')
     context = {'form': form}
-    return render(request, 'accounts/edit_user.html', context)
+    return render(request, 'accounts/edit_customer.html', context)
 
 
 @admin_only

@@ -16,8 +16,8 @@ urlpatterns = [
     path('blackjack/', views.blackjack, name="blackjack"),
     path("delete_user/<str:username>/", views.delete_user, name="delete_user"),
     path("confirm_delete_user/<str:username>/", views.confirm_delete_user, name="confirm_delete_user"),
-
-    path("edit_user/<str:pk>/", views.edit_user, name="edit_user"),
+    
+    path("edit_customer/<str:pk>/", views.edit_customer, name="edit_customer"),
     path("edit_order/<str:pk>/", views.edit_order, name="edit_order"),
     path("remove_from_cart/", views.remove_from_cart, name="remove_from_cart"),
     path("order_placed/<str:pk>/", views.order_placed, name="order_placed"),
