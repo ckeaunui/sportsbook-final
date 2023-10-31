@@ -4,6 +4,8 @@
 {% csrf_token %}
 
 
+
+
 <div id="wrapper">
     <div id="game">
 		<div id="alert" class="alert alert-error hide"><span></span></div>
@@ -193,6 +195,8 @@
 	</style>
 
 	<script>
+		let active_link = document.getElementById("casino");
+        active_link.className += " active";
     /*
 
 		A JavaScript Blackjack game created June 2013 by Chris Clower 
@@ -562,6 +566,19 @@
 					$('#double').prop('disabled', true);
 					this.setWager(wager);
 					this.setCash(-wager);
+
+					// remove from balance here
+					const form_data = {
+							csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+							amount: wager,
+						};
+
+						$.ajax({
+							type : 'POST',
+							url: '/place_wager/',
+							data: form_data,
+							success: function() {}
+						});
 					
 					this.hit(true);
 				} else {
@@ -715,7 +732,7 @@
 				var	rank  = card.getRank(),
 						suit  = card.getSuit(),
 						color = 'red',
-						posx  = 402,
+						posx  = -25,
 						posy  = 182,
 						speed = 1000,
 						cards = ele + ' .card-' + i;
@@ -860,11 +877,10 @@
 						type : 'POST',
 						url: '/add_to_balance/',
 						data: form_data,
-
 						success: function() {}
 					});
 				}
-
+				// document.getElementById('wager').value = 0;
 				showAlert(result);
 
 				dealer.flipCards();
@@ -892,14 +908,10 @@
 				if(cash > 0 && !running) {
 					if($.trim($('#wager').val()) > 0) {
 						// Update balance here
-
-
-
-
 						game.newGame();
 					} else {
 						$('#alert').removeClass('alert-info alert-success').addClass('alert-error');
-						showAlert('The minimum bet is $1.');
+						showAlert('The minimum bet is $1');
 					}
 				} else {
 					$('#myModal').modal();

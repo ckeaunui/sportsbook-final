@@ -4,6 +4,9 @@
 {% csrf_token %}
 <div>
 	<script>
+		let active_link = document.getElementById("casino");
+        active_link.className += " active";
+
 		let bankValue = Math.round(((parseFloat("{{ customer.balance }}") + parseFloat("{{ customer.credit }}"))+ Number.EPSILON) * 100) / 100;
 		let currentBet = 0;
 		let wager = 5;
@@ -678,21 +681,11 @@
 	</script>
 
 	<style>
-		html, body{
-			font-family: arial;
-			cursor: default;
-			-webkit-touch-callout: none;
-			-webkit-user-select: none;
-			-khtml-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
-		}
 
 		#container{
 			display: flex;
 			justify-content: center;
-			background-color: #016D29;
+			background-color: rgb(0, 105, 0);
 			height: 100vh;
 			padding: 20px;
 			color: #fff;

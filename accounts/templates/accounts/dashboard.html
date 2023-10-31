@@ -138,7 +138,6 @@
                             <th>Weekly Profit</th>
                             <th>Active Bets</th>
                             <th></th>
-                            <th>
                         </tr>
 
                         {% for customer in customers_username_sorted %}
@@ -172,14 +171,14 @@
                             <th>Description</th>
                             <th>Price</th>
                             <th>Wager</th>
-                            <th>Payout</th>
+                            <th>To Profit</th>
                             <th>Date</th>
                             <th>Payment Method</th>
                             <th>Status</th>
                             <th></th>
                         </tr>
                     
-                        {% for order in orders %}
+                        {% for order in pending_bets %}
                             <tr>
                                 <td>{{ order.customer.name }}</td>
                                 <td>{{ order.name}}</td>
@@ -377,8 +376,6 @@
         z-index: -1;
     }
 
-    /* Styling buttons & webpage */
-
     body {
         background: #060d1f;
         color: #fefefe;
@@ -417,7 +414,6 @@
 
     .customer-table {
         border-radius: 10px;
-        /*margin-right: 200px;*/
         background-color: #151d33;
         padding: 25px;
         border-collapse: collapse;
@@ -459,9 +455,6 @@
         height: 50px;
     }
 
-    .dashboard-description {
-        white-space: pre;
-    }
 
     #customer-filter-dropdown {
         width: 103px;

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>PlusEv</title>
+    <title>CRM</title>
 
-    
+ 
 </head>
 <body>
     
-    <form action={% url 'edit_customer' user.customer.id %} method="POST">
+    <form action="" method="POST">
         {% csrf_token %}
         {{ form }}
         <a href="{% url 'dashboard' %}">Cancel</a>

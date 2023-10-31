@@ -309,12 +309,13 @@ def dashboard(request):
     total_tokens = int(response.headers['X-Requests-Used']) + int(float(response.headers['X-Requests-Remaining']))
     customers = Customer.objects.all()
     orders = Order.objects.all()
-    pending_bets = orders.filter(status='Pending')
     pending_total = 0
     net_total = 0
 
     lost_bets = orders.filter(status='Wager Lost')
     won_bets = orders.filter(status='Wager Won')
+    pending_bets = orders.filter(status='Pending')
+
 
     for bet in lost_bets:
         if bet.payment_method == 'Credit':
@@ -438,9 +439,9 @@ def edit_customer(request, pk):
     user = customer.user
     print(customer, user)
 
-    form = EditUserForm(instance=customer)
+    form = EditCustomerForm(instance=customer)
     if request.method == 'POST':
-        form = EditUserForm(request.POST, instance=customer)
+        form = EditCustomerForm(request.POST, instance=customer)
         if form.is_valid():
             form.save()
             return redirect('dashboard')
@@ -457,35 +458,50 @@ def edit_order(request, pk):
     if request.method == 'POST':
         form = OrderForm(request.POST, instance=order)
         if form.is_valid():
-            if old == 'Pending':
-                # remove wager amount from pending
-                customer.pending -= order.wager
-            elif old == 'Wager Won':
-                # Remove to_win from balance
+
+            # Change the wager back to the pending state
+            if old == 'Wager Won':
                 customer.balance -= order.to_win
+                if order.payment_method == 'Credit':
+                    customer.balance -= order.wager
+                customer.pending += order.wager
             elif old == 'Wager Lost':
-                # add wager to balance
-                customer.balance += order.wager  
-                customer.freeplay -= 0.2 * order.wager
+                customer.pending += order.wager
             elif old == 'Draw':
                 if order.payment_method == 'Credit':
                     customer.balance -= order.wager
                 elif order.payment_method == 'Freeplay':
                     customer.freeplay -= order.wager
-            
-            if order.status == 'Pending':
-                # add wager to pending
                 customer.pending += order.wager
-            elif order.status == 'Wager Won':
-                # Add to_win to balance
+            elif old == 'Void':
+                if order.payment_method == 'Credit':
+                    customer.balance -= order.wager
+                elif order.payment_method == 'Freeplay':
+                    customer.freeplay -= order.wager
+                customer.pending += order.wager
+
+            # Payouts
+            if order.status == 'Wager Won':
                 customer.balance += order.to_win
+                if order.payment_method == 'Credit':
+                    customer.balance += order.wager
+                customer.pending -= order.wager
             elif order.status == 'Wager Lost':
-                customer.freeplay += 0.2 * order.wager
+                customer.pending -= order.wager
             elif order.status == 'Draw':
                 if order.payment_method == 'Credit':
                     customer.balance += order.wager
                 elif order.payment_method == 'Freeplay':
                     customer.freeplay += order.wager
+                customer.pending -= order.wager
+            elif order.status == 'Void':
+                if order.payment_method == 'Credit':
+                    customer.balance += order.wager
+                elif order.payment_method == 'Freeplay':
+                    customer.freeplay += order.wager
+                customer.pending -= order.wager
+
+            # Round values
             customer.balance = round(customer.balance, 2)
             customer.freeplay = round(customer.freeplay, 2)
             customer.pending = round(customer.pending, 2)
