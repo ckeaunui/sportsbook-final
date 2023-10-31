@@ -14,10 +14,15 @@ class CreateUserForm(UserCreationForm):
         model = User
         fields = ['username', 'password1', 'password2']
 
-class EditUserForm(ModelForm):
+class EditUserForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ['username', 'password']
+
+class EditCustomerForm(ModelForm):
     class Meta:
         model = Customer
-        fields = ['name', 'credit', 'balance', 'freeplay']
+        fields = ['name', 'credit', 'balance', 'freeplay', 'user']
 
 class CreateOrderForm(ModelForm):
     class Meta:
