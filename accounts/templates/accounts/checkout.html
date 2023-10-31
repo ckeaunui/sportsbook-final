@@ -159,6 +159,7 @@
                         if (parlay_rows <= 0) {
                             console.log('To Delete');
                             document.getElementById('parlay-header').remove();
+                            document.getElementById('freeplay-option').disabled = false;
                         } else {
                             update_parlay_price();
                             document.getElementById('parlay-label').textContent = String(parlay_rows) + ' leg parlay';
@@ -191,7 +192,7 @@
 
     </script>
 
-    <h1>Checkout</h1>
+    <h1 id="checkout-title">Checkout</h1>
 
     <div class="checkout-container">
         <form method="POST" action="{% url 'place_order' %}">
@@ -299,7 +300,7 @@
                             <label class="payment-method-label">
                                 <div class="container-row">
                                     <div class="layer1">
-                                        <input class="payment-method" name="payment-method" value="Freeplay" type="radio" onchange="can_afford()">
+                                        <input id="freeplay-option" class="payment-method" name="payment-method" value="Freeplay" type="radio" onchange="can_afford()">
                                     </div>
                                     <div class="layer2">
                                         <span>Freeplay</span>
@@ -344,6 +345,10 @@
             let parlay_price_div = document.getElementById("parlay-price-td");
             if (parseInt('{{ straight_data|length }}') + parseInt('{{ parlay_data|length }}') == 0) {
                 document.getElementById('straight-submit').disabled = true;
+            }
+
+            if (parseInt('{{ parlay_data|length }}') > 0) {
+                document.getElementById('freeplay-option').disabled = true;
             }
 
         </script>
@@ -403,6 +408,12 @@
         }
 
         #straight-submit:disabled {
+            background: #999;
+            color: #555;
+            cursor: not-allowed;
+        }
+
+        #freeplay-option:disabled {
             background: #999;
             color: #555;
             cursor: not-allowed;
