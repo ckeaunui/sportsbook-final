@@ -516,7 +516,7 @@
 				deal.dealCard(1, 0, [this]);
 				pscore = player.getScore();
 
-				if(dbl || pscore > 21) {
+				if (dbl || pscore > 21) {
 					running = false;
 
 					setTimeout(function() {
@@ -934,7 +934,7 @@
 			$('#actions:not(#wager), #game, #myModal').disableSelection();
 			$('#newGame, #cancel').on('click', function(e) { e.preventDefault(); });
 			$('#cancel').on('click', function() { $('#myModal').modal('hide'); });
-			$('#wager').val(100);
+			$('#wager').val(0);
 			$('#cash span').html(player.getCash());
 			player.getBank();
 
