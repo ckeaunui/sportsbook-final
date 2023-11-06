@@ -1,286 +1,194 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>PlusEV:Admin</title>
-    <script src="https://kit.fontawesome.com/cfe57839c8.js" crossorigin="anonymous"></script>
-    <script>
-        $ = function(id) {
-            return document.getElementById(id);
-        }
-
-        var show = function(id, customer_name) {
-            $(id).style.display ='block';
-
-        }
-        var hide = function(id) {
-            $(id).style.display ='none';
-        }
-
-        function sort_users(by) {
-            return;
-            document.getElementById('customer-table').innerHTML = "";
-            let sorted_list = "{{ customers_username_sorted }}";
-            if (by == 'user') {
-                sorted_list = "{{ customers_username_sorted }}";
-
-            } else if (by == 'balance') {
-                sorted_list = "{{ customers_balance_sorted }}";
-                
-            } else if (by == 'pending') {
-                sorted_list = "{{ customers_pending_sorted }}";
-
-            } else if (by == 'freeplay') {
-                sorted_list = "{{ customers_freeplay_sorted }}";
-
+    <head>
+        <title>PlusEV:Admin</title>
+        <script src="https://kit.fontawesome.com/cfe57839c8.js" crossorigin="anonymous"></script>
+        <script>
+            
+            $ = function(id) {
+                return document.getElementById(id);
             }
-            reload_users_table(sorted_list);
-        }
-
-        function reload_users_table(ordered_list) {
-            let ordered_table = document.getElementById('customer-table');
-            ordered_table.innerHTML = "<tr><th>User</th><th>Credit</th><th>Balance</th><th>Pending</th><th>Freeplay</th><th>Weekly Profit</th><th>Active Bets</th><th></th><th></tr>";
-                console.log(ordered_list)
-                for (i in ordered_list) {
-
-                console.log(i);
-
-                let row = document.createElement('tr');
-                let customer_name = document.createElement('td');
-                let customer_credit = document.createElement('td');
-                let customer_balance = document.createElement('td');
-                let customer_pending = document.createElement('td');
-                let customer_freeplay = document.createElement('td');
-                let customer_weekly_profit = document.createElement('td');
-                let customer_edit = document.createElement('td');
-
-                customer_name.textContent = i ;
-                customer_credit.textContent = '1';
-                customer_balance.textContent = '1';
-                customer_pending.textContent = '1';
-                customer_freeplay.textContent = '1';
-                customer_weekly_profit.textContent = '1';
-                customer_edit.textContent = '1';
-
-                row.appendChild(customer_name);
-                row.appendChild(customer_credit);
-                row.appendChild(customer_balance);
-                row.appendChild(customer_pending);
-                row.appendChild(customer_freeplay);
-                row.appendChild(customer_weekly_profit);
-                row.appendChild(customer_edit);
-                ordered_table.appendChild(row)
+    
+            var show = function(id, customer_name) {
+                $(id).style.display ='block';
+    
             }
-        }
-        
-    </script>
-
-</head>
-<body>
-    <div>
-        <h1>Admin Page</h1>
-
-        <a class="button2" href="{% url 'sports' sport_group='American Football' %}">Customer View</a>
-        <a id="logout" class="button2" href="{% url 'logout' %}">Logout</a>
-        <br>
-        <div class="row">
-            <div class="header-row">
-                <div class="col">
-                    <h3 class="card-title">Bets Pending</h3>
-                    <p class="card-title">{{ pending_bets.count }}</p>
+            var hide = function(id) {
+                $(id).style.display ='none';
+            }
+            
+        </script>
+    
+    </head>
+    <body>
+        <div>
+            <h1>Admin Page</h1>
+    
+            <a class="button2" href="{% url 'sports' sport_group='American Football' %}">Customer View</a>
+            <a id="logout" class="button2" href="{% url 'logout' %}">Logout</a>
+            <br>
+            <div class="row">
+                <div class="header-row">
+                    <div class="col">
+                        <h3 class="card-title">Bets Pending</h3>
+                        <p class="card-title">{{ pending_bets.count }}</p>
+                    </div>
+                    <div class="col">
+                        <h3 class="card-title">Total Pending</h3>   
+                        <p class="card-title">${{ pending_total }}</p>
+                    </div>
+                    <div class="col">
+                        <h3 class="card-title">Weekly Profit</h3>
+                        <p class="card-title">${{ net_total }}</p>
+                    </div>
+                     <div class="col">
+                        <h3 class="card-title">Total profit</h3>   
+                        <p class="card-title">${{ net_total }}</p>
+                    </div>
+                    <div class="col">
+                        <h3 class="card-title">Tokens Used (Resets monthly)</h3>   
+                        <p class="card-title">{{ tokens_used }} / {{ total_tokens }}</p>
+                    </div>
+                   
                 </div>
-                <div class="col">
-                    <h3 class="card-title">Total Pending</h3>   
-                    <p class="card-title">${{ pending_total }}</p>
+    
+    
+                <div id="users-body" class="col-md-6 bg">
+                    <span>
+                        <h5>USERS</h5>
+                        <div id="customer-filter-dropdown">
+                            <button class="dropbtn button2" type="button">Order By</button>
+                            <div class="dropdown-content">
+                                <a id="name" href="{% url 'dashboard' customer_order='user' bet_filter=bet_filter scroll_to='users-body' %}">User</a>
+                                <a id="credit" href="{% url 'dashboard' customer_order='-credit' bet_filter=bet_filter scroll_to='users-body' %}">Credit</a>
+                                <a id="balance" href="{% url 'dashboard' customer_order='-balance' bet_filter=bet_filter scroll_to='users-body' %}">Balance</a>
+                                <a id="pending" href="{% url 'dashboard' customer_order='-pending' bet_filter=bet_filter scroll_to='users-body' %}">Pending</a>
+                                <a id="freeplay" href="{% url 'dashboard' customer_order='-freeplay' bet_filter=bet_filter scroll_to='users-body' %}">Freeplay</a>
+                                <a id="weekly-profit" href="{% url 'dashboard' customer_order='-weekly_profit' bet_filter=bet_filter scroll_to='users-body' %}">Weekly Profit</a>
+                            </div>
+                        </div>
+                        <a class="button2" href="{% url 'register' %}">Add User</a>
+                    </span>
+                    
+                    <div class="card card-body">
+                        <table id="customer-table" class="table customer-table">
+                            <tr>
+                                <th>User</th>
+                                <th>Credit</th>
+                                <th>Balance</th>
+                                <th>Pending</th>
+                                <th>Freeplay</th>
+                                <th>Weekly Profit</th>
+                                <th></th>
+                            </tr>
+    
+                            {% for customer in customers_sorted %}
+                                <tr>
+                                    <td>{{ customer.name }}</td>
+                                    <td>{{ customer.credit }}</td>
+                                    <td>{{ customer.balance }}</td>
+                                    <td>{{ customer.pending }}</td>
+                                    <td>{{ customer.freeplay }}</td>
+                                    <td>{{ customer.weekly_profit }}</td>
+                                    <td>
+                                        <a class="button2" href="{% url 'edit_customer' pk=customer.id %}">Edit</a>
+                                        <a class="button" id="confirm-delete-user-btn" href="{% url 'confirm_delete_user' customer.name %}">Delete</a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+    
+                        </table>
+                    </div>
                 </div>
-                <div class="col">
-                    <h3 class="card-title">Weekly Profit</h3>
-                    <p class="card-title">${{ net_total }}</p>
-                </div>
-                 <div class="col">
-                    <h3 class="card-title">Total profit</h3>   
-                    <p class="card-title">${{ net_total }}</p>
-                </div>
-                <div class="col">
-                    <h3 class="card-title">Tokens Used (Resets monthly)</h3>   
-                    <p class="card-title">{{ tokens_used }} / {{ total_tokens }}</p>
-                </div>
-               
-            </div>
-
-
-            <div class="col-md-6 bg">
-                <span>
-                    <h5>USERS</h5>
+                <div id="bets-body" class="col-md-5 bg">
+                    <h5>BETS</h5>
                     <div id="customer-filter-dropdown">
                         <button class="dropbtn button2" type="button">Filter</button>
                         <div class="dropdown-content">
-                            <button id="name" onclick="sort_users('name')">Name A-Z</button>
-                            <button id="balance" onclick="sort_users('balance')">Balance</button>
-                            <button id="freeplay" onclick="sort_users('freeplay')">Freeplay</butotn>
-                            <button id="pending" onclick="sort_users('pending')">Pending</button>
+                            <a id="name" href="{% url 'dashboard' customer_order=customer_order bet_filter='Pending' scroll_to='bets-body' %}">Pending</a>
+                            <a id="credit" href="{% url 'dashboard' customer_order=customer_order bet_filter='Wager Won' scroll_to='bets-body' %}">Wager Won</a>
+                            <a id="balance" href="{% url 'dashboard' customer_order=customer_order bet_filter='Wager Lost' scroll_to='bets-body' %}">Wager Lost</a>
+                            <a id="pending" href="{% url 'dashboard' customer_order=customer_order bet_filter='Draw' scroll_to='bets-body' %}">Draw</a>
+                            <a id="weekly-profit" href="{% url 'dashboard' customer_order=customer_order bet_filter='Void' scroll_to='bets-body' %}">Void</a>
                         </div>
                     </div>
-                    <a class="button2 logout" href="{% url 'register' %}">Add User</a>
-                    
-                </span>
-                
-                <div class="card card-body">
-
-                    
-
-                    <table id="customer-table" class="table customer-table">
-                        <tr>
-                            <th>User</th>
-                            <th>Credit</th>
-                            <th>Balance</th>
-                            <th>Pending</th>
-                            <th>Freeplay</th>
-                            <th>Weekly Profit</th>
-                            <th>Active Bets</th>
-                            <th></th>
-                        </tr>
-
-                        {% for customer in customers_username_sorted %}
-
+                    <div class="card card-body">
+                        <table class="table table-sm">
                             <tr>
-                                <td>{{ customer.name }}</td>
-                                <td>{{ customer.credit }}</td>
-                                <td>{{ customer.balance }}</td>
-                                <td>{{ customer.pending }}</td>
-                                <td>{{ customer.freeplay }}</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>
-                                    <a class="button2" href="{% url 'edit_customer' pk=customer.id %}">Edit</a>
-                                    <a class="button" id="confirm-delete-user-btn" href="{% url 'confirm_delete_user' customer.name %}">Delete</a>
-                                    
-                                </td>
+                                <th>User</th>
+                                <th>Game</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th>Wager</th>
+                                <th>To Profit</th>
+                                <th>Date</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                                <th></th>
                             </tr>
-                        {% endfor %}
-
-                    </table>
-                </div>
-            </div>
-            <div class="col-md-5 bg">
-                <h5>BETS</h5>
-                <div class="card card-body">
-                    <table class="table table-sm">
-                        <tr>
-                            <th>User</th>
-                            <th>Game</th>
-                            <th>Description</th>
-                            <th>Price</th>
-                            <th>Wager</th>
-                            <th>To Profit</th>
-                            <th>Date</th>
-                            <th>Payment Method</th>
-                            <th>Status</th>
-                            <th></th>
-                        </tr>
-                    
-                        {% for order in pending_bets %}
-                            <tr>
-                                <td>{{ order.customer.name }}</td>
-                                <td>{{ order.name}}</td>
-                                <td class="dashboard-description">{{ order.description }}</td>
-                                <td>
-                                    {% if order.price > 0 %}
-                                        +{{ order.price }}
-                                    {% else %}
-                                        {{ order.price }}
-                                    {% endif %}
-                                </td>
-                                <td>{{ order.wager }}</td>
-                                <td>{{ order.to_win }}</td>
-                                <td>{{ order.commence_time }}</td>
-                                <td>{{ order.payment_method }}</td>
-                                <td>{{ order.status }}</td>
-                                <td>        
-                                    <a class="button2" href="{% url 'edit_order' pk=order.id %}">Edit</a>
-                                </td>
-                                <td>
-                                </td>
-                            </tr>
-
-                        {% endfor %}
-
-                    </table>
+                        
+                            {% for order in filtered_bets %}
+                                <tr>
+                                    <td>{{ order.customer.name }}</td>
+                                    <td>{{ order.name}}</td>
+                                    <td class="dashboard-description">{{ order.description }}</td>
+                                    <td>
+                                        {% if order.price > 0 %}
+                                            +{{ order.price }}
+                                        {% else %}
+                                            {{ order.price }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ order.wager }}</td>
+                                    <td>{{ order.to_win }}</td>
+                                    <td>{{ order.payout_date }}</td>
+                                    <td>{{ order.payment_method }}</td>
+                                    <td>{{ order.status }}</td>
+                                    <td>        
+                                        <a class="button2" href="{% url 'edit_order' pk=order.id %}">Edit</a>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!--
-        <div class="modal fade" id="editModal" tabindex="-1" arial-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialogue modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            
-                <form id="formEdit" action="">
-                    {% csrf_token %}
-                    <div class="modal-body">
-                        <div class="form-group validate">
-                            <input type="text" name="owner" class="form-control" placeholder="1">
-                            <small class="text-red text-muted mySpan"></small>
-                        </div>
-                        <div class="form-group validate">
-                            <input type="text" name="name" class="form-control" placeholder="2">
-                            <small class="text-red text-muted mySpan"></small>
-                        </div>
-                        <div class="form-group validate">
-                            <input type="text" name="task_date" class="form-control" placeholder="3">
-                            <small class="text-red text-muted mySpan"></small>
-                        </div>
-                        <div class="form-group validate">
-                            <input type="text" name="start_time" class="form-control" placeholder="4">
-                            <small class="text-red text-muted mySpan"></small>
-                        </div>
-                        <div class="form-group validate">
-                            <input type="text" name="end_time" class="form-control" placeholder="5">
-                            <small class="text-red text-muted mySpan"></small>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary btnUpdate">Update</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>-->
-    <script>
-        $("#table tbody").on("click", ".link-delete", function(e) {
-            e.preventDefault();
-            var $this = $(this);
-            if(confirm("sure?")) {
-                $.ajax({
-                    url: this.attr('href'),
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(resp) {
-                        if (resp.message == 'success') {
-                            $this.parents('.record').fadeOut('slow', function() {
-                                $this.parents.record.remove();
-                            })
+        <script>
 
-                        } else {
-                            alert(resp.message)
+            $("#table tbody").on("click", ".link-delete", function(e) {
+                e.preventDefault();
+                var $this = $(this);
+                if(confirm("sure?")) {
+                    $.ajax({
+                        url: this.attr('href'),
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(resp) {
+                            if (resp.message == 'success') {
+                                $this.parents('.record').fadeOut('slow', function() {
+                                    $this.parents.record.remove();
+                                })
+    
+                            } else {
+                                alert(resp.message)
+                            }
+                        },
+                        error: function(resp) {
+                            console.log('Error');
                         }
-                    },
-                    error: function(resp) {
-                        console.log('Error');
-                    }
+    
+                    });
+                }
+            });
 
+            const scrollToElement = document.getElementById('customer-filter-dropdown');
+            scrollToElement.scrollIntoView();
 
-                });
-            }
-        });
-    </script>
-</body>
+        </script>
+    </body>
 
 <style>
 
@@ -546,6 +454,14 @@
 
     #customer-filter-dropdown {
         margin-bottom: 15px;
+    }
+
+    #confirm-delete-user-btn {
+        margin-left: 5px;
+    }
+
+    #bets-body {
+        margin-bottom: 75px;
     }
     
 

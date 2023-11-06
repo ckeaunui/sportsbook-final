@@ -80,7 +80,7 @@
 
 	div#phand, div#dhand {
 		font-weight: 700;
-		left: -440px;
+		left: -500px;
 		position: absolute;
 		top: -95px;
 		white-space: nowrap;
@@ -190,6 +190,14 @@
 		top: 34.5%;
 		width: 500px;
 		z-index: 0;
+	}
+
+	.card-0 {
+		right: -25px;
+	}
+
+	#phand {
+		left: -668px;
 	}
 	
 	</style>
@@ -868,9 +876,19 @@
 				if (winnings > 0) {
 					// add to balance here
 					// Ajax update user balance here (subtract bet amount)
+
+					if (winnings == wager) {
+						outcome = 'Draw'
+					} else {
+						outcome = 'Won'
+					}
+
 					const form_data = {
 						csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
-						amount: winnings,
+						payout: winnings,
+						wager: wager,
+						outcome: outcome,
+						game: 'Blackjack',
 					};
 
 					$.ajax({
@@ -879,6 +897,33 @@
 						data: form_data,
 						success: function() {}
 					});
+
+
+					$.ajax({
+						type : 'POST',
+						url: '/place_casino_wager/',
+						data: form_data,
+						success: function() {}
+					});
+					
+					
+
+				} else {
+					const form_data = {
+						csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+						payout: 0,
+						wager: wager,
+						outcome: 'Lost',
+						game: 'Blackjack',
+					};
+
+					$.ajax({
+						type : 'POST',
+						url: '/place_casino_wager/',
+						data: form_data,
+						success: function() {}
+					});
+
 				}
 				// document.getElementById('wager').value = 0;
 				showAlert(result);

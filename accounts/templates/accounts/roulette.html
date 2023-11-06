@@ -536,6 +536,20 @@
 						}
 					}
 					win(winningSpin, winValue, betTotal);
+				} else {
+					const casino_bet_data = {
+						csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+						payout: 0,
+						wager: currentBet,
+						game: 'Roulette',
+					};
+
+					$.ajax({
+						type : 'POST',
+						url: '/place_casino_wager/',
+						data: casino_bet_data,
+						success: function() {}
+					});
 				}
 
 				currentBet = 0;
@@ -558,6 +572,24 @@
 		}
 
 		function win(winningSpin, winValue, betTotal){
+
+			console.log(winningSpin, winValue, betTotal);
+
+			const casino_bet_data = {
+				csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+				payout: winValue + betTotal,
+				wager: currentBet,
+				game: 'Roulette',
+			};
+
+			$.ajax({
+				type : 'POST',
+				url: '/place_casino_wager/',
+				data: casino_bet_data,
+				success: function() {}
+			});
+			
+
 			if(winValue > 0){
 				// Add winValue + betTotal to customer.balance here
 				const form_data = {

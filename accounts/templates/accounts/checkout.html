@@ -172,7 +172,6 @@
         }
 
         function edit_wager(id, wager) {
-            console.log("Editing bih");
             const form_data = {
                 csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
                 id: id,
@@ -183,7 +182,6 @@
                 url: '/edit_wager/',
                 data: form_data,
                 success: function() {
-                    alert('Editing');
                 }
             });
 

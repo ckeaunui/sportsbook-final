@@ -16,7 +16,6 @@ from django.views.generic import View
 import operator
 import time
 
-
 import json
 
 from .models import *
@@ -273,7 +272,7 @@ def registerPage(request):
             group = Group.objects.get(name='customer')
             user.groups.add(group)
             user = authenticate(request, username=username, password=password)
-            return redirect('dashboard')
+            return redirect('dashboard', customer_order='user', bet_filter='Pending', scroll_to='users-body')
     context = {'form': form}
     return render(request, 'accounts/register.html', context)
 
@@ -289,7 +288,7 @@ def loginPage(request):
 
             # Replace with actual users name
             if username == 'admin':
-                return redirect('dashboard')
+                return redirect('dashboard', customer_order='user', bet_filter='Pending', scroll_to='users-body')
             else:
                 return redirect('sports', sport_group='American Football')
     context = {}
@@ -303,7 +302,7 @@ def logoutUser(request):
 
 @login_required(login_url='login')
 @admin_only
-def dashboard(request):
+def dashboard(request, customer_order='user', bet_filter='Pending', scroll_to='None'):
     response = requests.get(SPORTS_URL)
     tokens_used = response.headers['X-Requests-Used']
     total_tokens = int(response.headers['X-Requests-Used']) + int(float(response.headers['X-Requests-Remaining']))
@@ -315,7 +314,7 @@ def dashboard(request):
     lost_bets = orders.filter(status='Wager Lost')
     won_bets = orders.filter(status='Wager Won')
     pending_bets = orders.filter(status='Pending')
-
+    filtered_bets = orders.filter(status=bet_filter)
 
     for bet in lost_bets:
         if bet.payment_method == 'Credit':
@@ -325,25 +324,28 @@ def dashboard(request):
         net_total += bet.to_win
     net_total = round(net_total, 2)
 
-    customers_username_sorted = customers.order_by('user')
-    customers_balance_sorted = customers.order_by('balance')
-    customers_freeplay_sorted = customers.order_by('freeplay')
-    customers_pending_sorted = customers.order_by('pending')
-
     for pending in pending_bets:
         pending_total += pending.wager
+    pending_total = round(pending_total, 2)
     form = CreateUserForm()
     if request.method == "POST":
         form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
+
+    # Order customers by query
+    customers_sorted = customers.order_by(customer_order)
+
+    
     context = {
         'customers': customers, 
-        'customers_username_sorted': customers_username_sorted,
-        'customers_balance_sorted': customers_balance_sorted,
-        'customers_freeplay_sorted': customers_freeplay_sorted,
-        'customers_pending_sorted': customers_pending_sorted,
-        'orders': orders, 
+        'customer_order': customer_order,
+        'customers_sorted': customers_sorted,
+
+        'filtered_bets': filtered_bets,
+        'bet_filter': bet_filter,
+        'scroll_to': scroll_to,
+
         'pending_bets': pending_bets, 
         'tokens_used': tokens_used, 
         'total_tokens': total_tokens, 
@@ -388,7 +390,7 @@ def userPage(request):
         context = {'user_orders': user_orders}
         return render(request, 'accounts/profile.html', context)
     elif group == "admin":
-        return redirect('dashboard')
+        return redirect('dashboard', customer_order='user', bet_filter='Pending', scroll_to='users-body')
     else:
         return redirect('login')
 
@@ -424,7 +426,7 @@ def blackjack(request):
 def delete_user(request, username):
     user = User.objects.filter(username=username)
     user.delete()
-    return redirect('dashboard')
+    return redirect('dashboard', customer_order='user', bet_filter='Pending', scroll_to='users-body')
 
 
 @admin_only
@@ -435,16 +437,16 @@ def confirm_delete_user(request, username):
 
 @admin_only
 def edit_customer(request, pk):
+    print('editing customer')
     customer = Customer.objects.get(id=pk)
     user = customer.user
-    print(customer, user)
 
     form = EditCustomerForm(instance=customer)
     if request.method == 'POST':
         form = EditCustomerForm(request.POST, instance=customer)
         if form.is_valid():
             form.save()
-            return redirect('dashboard')
+            return redirect('dashboard', customer_order='user', bet_filter='Pending', scroll_to='users-body')
     context = {'form': form, 'user': user}
     return render(request, 'accounts/edit_customer.html', context)
 
@@ -465,8 +467,10 @@ def edit_order(request, pk):
                 if order.payment_method == 'Credit':
                     customer.balance -= order.wager
                 customer.pending += order.wager
+                customer.weekly_profit -= order.to_win
             elif old == 'Wager Lost':
                 customer.pending += order.wager
+                customer.weekly_profit += order.wager
             elif old == 'Draw':
                 if order.payment_method == 'Credit':
                     customer.balance -= order.wager
@@ -486,8 +490,10 @@ def edit_order(request, pk):
                 if order.payment_method == 'Credit':
                     customer.balance += order.wager
                 customer.pending -= order.wager
+                customer.weekly_profit += order.to_win
             elif order.status == 'Wager Lost':
                 customer.pending -= order.wager
+                customer.weekly_profit -= order.wager
             elif order.status == 'Draw':
                 if order.payment_method == 'Credit':
                     customer.balance += order.wager
@@ -502,12 +508,15 @@ def edit_order(request, pk):
                 customer.pending -= order.wager
 
             # Round values
+            customer.credit = round(customer.credit, 2)
             customer.balance = round(customer.balance, 2)
             customer.freeplay = round(customer.freeplay, 2)
             customer.pending = round(customer.pending, 2)
+            customer.weekly_profit = round(customer.weekly_profit)
+
             form.save()
             customer.save()
-            return redirect('dashboard')
+            return redirect('dashboard', customer_order='user', bet_filter='Pending', scroll_to='bets-body')
     context = {'form': form, 'order': order}
     return render(request, 'accounts/edit_order.html', context)
 
@@ -808,6 +817,8 @@ def place_order(request):
         price = product.price
         name = product.match.match_name
         payout_date_utx = product.match.commence_time_unix
+        dt = datetime.utcfromtimestamp(payout_date_utx) - timedelta(hours=7, minutes=0) 
+        payout_date = dt.strftime('%b. %d - %-I:%M %p') 
         to_win = 0
         if price > 0:
             to_win = round(int(price) / 100 * float(wager), 2)
@@ -816,7 +827,7 @@ def place_order(request):
         order_item, _ = OrderItem.objects.get_or_create(product=product, price=price)
         order_item.save()
         
-        order = Order.objects.create(customer=customer, name=name, description=description, wager=wager, to_win=to_win, status='Pending', price=price, payment_method=payment_method, payout_date_utx=payout_date_utx)
+        order = Order.objects.create(customer=customer, name=name, description=description, wager=wager, to_win=to_win, status='Pending', price=price, payment_method=payment_method, payout_date_utx=payout_date_utx, payout_date=payout_date)
         order.products.add(order_item)
         order.save()
 
@@ -956,8 +967,6 @@ def get_prop_data(request):
             match = Match.objects.get(match_id=match_id)
             prop_data_str = {}
 
-            
-
             if len(prop_data['bookmakers']) > 0:
                 for outcome in prop_data['bookmakers'][0]['markets'][0]['outcomes']:
 
@@ -998,5 +1007,16 @@ def get_prop_data(request):
             return HttpResponse("No Data Available")
 
 
+def place_casino_wager(request):
+    if request.method =='POST':
+        print('Creating')
+        customer = request.user.customer
+        wager = request.POST.get('wager', 'None')
+        game = request.POST.get('game', 'None')
+        result  = request.POST.get('outcome', 'None')
+        payout = request.POST.get('payout', 'None')
+        casino_wager = CasinoWager.objects.create(customer=customer, wager=wager, payout=payout, game=game, result=result)
+
+        return HttpResponse("Wager Confirmed")
 
 

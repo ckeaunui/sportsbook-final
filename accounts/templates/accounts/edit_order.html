@@ -8,39 +8,78 @@
 <body>
     <form action="" method="POST">
         {% csrf_token %}
-        <table>
-            <tbody>
-                <tr>
-                    <td>User</td>
-                    <td>{{ order.customer }}</td>
-                </tr>
-                <tr>
-                    <td>Bet(s)</td>
-                    <td>{{ order.description }}</td>
-                </tr>
-                <tr>
-                    <td>{{ form.price.label }}</td>
-                    <td>{{ form.price }}</td>
-                </tr>
-                <tr>
-                    <td>{{ form.wager.label }}</td>
-                    <td>{{ form.wager }}</td>
-                </tr>
-                <tr>
-                    <td>{{ form.to_win.label }}</td>
-                    <td>{{ form.to_win }}</td>
-                </tr>
-                <tr>
-                    <td>{{ form.status.label }}</td>
-                    <td>{{ form.status }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <a href="{% url 'dashboard' %}">Cancel</a>
-        <input type="Submit">
+        <div class="edit-body">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>User</td>
+                        <td>{{ order.customer }}</td>
+                    </tr>
+                    <tr>
+                        <td>Bet(s)</td>
+                        <td class="whitespace">{{ order.description }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ form.price.label }}</td>
+                        <td>{{ form.price }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ form.wager.label }}</td>
+                        <td>{{ form.wager }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ form.to_win.label }}</td>
+                        <td>{{ form.to_win }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ form.status.label }}</td>
+                        <td>{{ form.status }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <hr color="#273452">
+            <div class="confirm-cancel-block">
+                <a href="{% url 'dashboard' %}">Cancel</a>
+                <input type="Submit">
+            </div>
+        </div>
     </form>
 </body>
 <style>
+    body {
+        background-color: #060d1f;
+    }
+
+    .edit-body {
+        width: 50%;
+        background-color: #151d33;
+        border-radius: 10px;
+        margin: auto;
+    }
+
+    .edit-body table {
+        color: #fefefe;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    .edit-body table tbody tr {
+        height: 35px;
+
+    }
+
+    .confirm-cancel-block {
+        color: #fefefe;
+        padding: 10px;
+    }
+
+    .edit-body a, .edit-body input {
+        padding: 10px;
+    }
+
+    .whitespace {
+        white-space: pre;
+    }
 
 </style>
 </html>
