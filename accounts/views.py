@@ -10,11 +10,14 @@ from django.contrib import messages
 from django.contrib.auth.models import Group, User
 from django.http import HttpResponse
 from django.forms import formset_factory
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from django.http import HttpResponseRedirect
 from django.views.generic import View
+# from background_task import background
+
 import operator
 import time
+import schedule
 
 import json
 
@@ -310,19 +313,15 @@ def dashboard(request, customer_order='user', bet_filter='Pending', scroll_to='N
     orders = Order.objects.all()
     pending_total = 0
     net_total = 0
+    weekly_profit = 0
 
-    lost_bets = orders.filter(status='Wager Lost')
-    won_bets = orders.filter(status='Wager Won')
     pending_bets = orders.filter(status='Pending')
     filtered_bets = orders.filter(status=bet_filter)
 
-    for bet in lost_bets:
-        if bet.payment_method == 'Credit':
-            net_total -= bet.wager
-    
-    for bet in won_bets:
-        net_total += bet.to_win
-    net_total = round(net_total, 2)
+    for customer in customers:
+        weekly_profit += customer.weekly_profit
+        net_total += customer.total_profit
+    weekly_profit = round(weekly_profit, 2)
 
     for pending in pending_bets:
         pending_total += pending.wager
@@ -346,6 +345,7 @@ def dashboard(request, customer_order='user', bet_filter='Pending', scroll_to='N
         'bet_filter': bet_filter,
         'scroll_to': scroll_to,
 
+        'weekly_profit': weekly_profit,
         'pending_bets': pending_bets, 
         'tokens_used': tokens_used, 
         'total_tokens': total_tokens, 
@@ -380,6 +380,7 @@ def sports(request, sport_group):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['customer', 'admin'])
 def userPage(request):
+    check_wager_results()
     group = None
     if request.user.groups.exists():
         group = request.user.groups.all()[0].name
@@ -398,6 +399,7 @@ def userPage(request):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['customer', 'admin'])
 def casino(request):
+    check_wager_results()
     context = {}
     return render(request, 'accounts/casino.html', context)
 
@@ -405,6 +407,7 @@ def casino(request):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['customer', 'admin'])
 def roulette(request):
+    check_wager_results()
     customer = request.user.customer
     customer.balance = round(customer.balance, 2)
     customer.credit = round(customer.credit, 2)
@@ -415,6 +418,7 @@ def roulette(request):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['customer', 'admin'])
 def blackjack(request):
+    check_wager_results()
     customer = request.user.customer
     customer.balance = round(customer.balance, 2)
     customer.credit = round(customer.credit, 2)
@@ -437,7 +441,6 @@ def confirm_delete_user(request, username):
 
 @admin_only
 def edit_customer(request, pk):
-    print('editing customer')
     customer = Customer.objects.get(id=pk)
     user = customer.user
 
@@ -468,9 +471,11 @@ def edit_order(request, pk):
                     customer.balance -= order.wager
                 customer.pending += order.wager
                 customer.weekly_profit -= order.to_win
+                customer.total_profit -= order.to_win
             elif old == 'Wager Lost':
                 customer.pending += order.wager
                 customer.weekly_profit += order.wager
+                customer.total_profit += order.wager
             elif old == 'Draw':
                 if order.payment_method == 'Credit':
                     customer.balance -= order.wager
@@ -491,9 +496,11 @@ def edit_order(request, pk):
                     customer.balance += order.wager
                 customer.pending -= order.wager
                 customer.weekly_profit += order.to_win
+                customer.total_profit += order.to_win
             elif order.status == 'Wager Lost':
                 customer.pending -= order.wager
                 customer.weekly_profit -= order.wager
+                customer.total_profit -= order.wager
             elif order.status == 'Draw':
                 if order.payment_method == 'Credit':
                     customer.balance += order.wager
@@ -512,7 +519,8 @@ def edit_order(request, pk):
             customer.balance = round(customer.balance, 2)
             customer.freeplay = round(customer.freeplay, 2)
             customer.pending = round(customer.pending, 2)
-            customer.weekly_profit = round(customer.weekly_profit)
+            customer.weekly_profit = round(customer.weekly_profit, 2)
+            customer.total_profit = round(customer.total_profit, 2)
 
             form.save()
             customer.save()
@@ -526,6 +534,7 @@ def edit_order(request, pk):
 def load_table(request, sport_group, league_key, bet_type):
     # CartItem.objects.all().delete()
     # Fetch this leagues game data and save all bets as products
+    check_wager_results()
     leagues = []
     sport_title = None
     league_title = None
@@ -661,6 +670,7 @@ def load_table(request, sport_group, league_key, bet_type):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['customer', 'admin'])
 def checkout(request):
+    check_wager_results()
     context = {}
     if request.method == 'POST':
         customer = request.user.customer
@@ -802,6 +812,7 @@ def edit_wager(request):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['customer', 'admin'])
 def place_order(request):
+    # check_wager_results()
     customer = request.user.customer
     cart = Cart.objects.get(customer=customer)
     cart_items = CartItem.objects.filter(cart=cart)
@@ -847,6 +858,8 @@ def place_order(request):
         customer.pending = round(customer.pending, 2)
         customer.balance = round(customer.balance, 2)
         customer.freeplay = round(customer.freeplay, 2)
+        customer.weekly_profit = round(customer.weekly_profit, 2)
+        customer.total_profit = round(customer.total_profit, 2)
 
         # Update balance in customer object
         customer_obj.pending += float(wager)
@@ -923,6 +936,7 @@ def place_order(request):
         # Update balance in customer object
         customer_obj.pending += float(wager)
         customer_obj.pending = round(customer_obj.pending, 2)
+        customer_obj.balance = round(customer_obj.balance, 2)
         customer_obj.save()
     context = {}
     return render(request, 'accounts/place_order.html', context)
@@ -1009,7 +1023,6 @@ def get_prop_data(request):
 
 def place_casino_wager(request):
     if request.method =='POST':
-        print('Creating')
         customer = request.user.customer
         wager = request.POST.get('wager', 'None')
         game = request.POST.get('game', 'None')
@@ -1018,5 +1031,20 @@ def place_casino_wager(request):
         casino_wager = CasinoWager.objects.create(customer=customer, wager=wager, payout=payout, game=game, result=result)
 
         return HttpResponse("Wager Confirmed")
+
+"""
+@background(schedule=60)
+def weekly_reset():
+    # lookup user by id and send them a message
+    print('Reset')
+"""
+
+def check_wager_results():
+    pending_orders = Order.objects.all().filter(status='Pending')
+    for order in pending_orders:
+        payout_date = order.payout_date_utx
+        current_date = time.time()
+        if payout_date - current_date <= 0:
+            print('Time to get the results')
 
 

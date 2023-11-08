@@ -62,6 +62,8 @@ class Customer(models.Model):
     pending = models.FloatField(default=0.0, validators=[MinValueValidator(0.0)], null=True)
     freeplay = models.FloatField(default=0.0, validators=[MinValueValidator(0.0)], null=True)
     weekly_profit = models.FloatField(default=0.0, null=True)
+    total_profit = models.FloatField(default=0.0, null=True)
+
 
     def __str__(self):
 	    return self.name or None

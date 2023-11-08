@@ -22,7 +22,7 @@ class EditUserForm(UserCreationForm):
 class EditCustomerForm(ModelForm):
     class Meta:
         model = Customer
-        fields = ['name', 'credit', 'balance', 'freeplay', 'user']
+        fields = ['name', 'credit', 'balance', 'pending', 'freeplay', 'weekly_profit', 'total_profit']
 
 class CreateOrderForm(ModelForm):
     class Meta:
