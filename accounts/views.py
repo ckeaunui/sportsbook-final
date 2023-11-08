@@ -322,7 +322,8 @@ def dashboard(request, customer_order='user', bet_filter='Pending', scroll_to='N
         weekly_profit += customer.weekly_profit
         net_total += customer.total_profit
     weekly_profit = round(weekly_profit, 2)
-
+    net_total = round(net_total, 2)
+    
     for pending in pending_bets:
         pending_total += pending.wager
     pending_total = round(pending_total, 2)
